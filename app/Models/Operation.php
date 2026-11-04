@@ -10,12 +10,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\HasUuid;
 
 
-class Vente extends Model
+class Operation extends Model
 {
     use HasFactory;
     use SoftDeletes;
     use HasUuid;
-    protected $fillable = ['designation', 'user_id', 'nombre', 'prix', 'statut', 'produit_id', 'image'];
+    protected $fillable = ['designation', 'user_id', 'nombre', 'prix', 'statut', 'produit_id', 'image', 'team_id'];
 
 
     public function user(): BelongsTo
@@ -37,7 +37,7 @@ class Vente extends Model
         return $this->belongsTo(Produit::class);
     }
 
-    public static function getVentesGroupedByYearAndMonth()
+    public static function getOperationsGroupedByYearAndMonth()
     {
         return self::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
             ->groupBy('year', 'month')

@@ -14,20 +14,20 @@ return new class extends Migration
     public function up(): void
     {
         // Add s or remove s to the table name
-        Schema::create('type_vente', function (Blueprint $table) {
+        Schema::create('operation_type', function (Blueprint $table) {
             $table->uuid('type_id');
             $table->foreign('type_id')
             ->references('id')
             ->on('types')
             ->onDelete('cascade');
 
-            $table->uuid('vente_id');
-            $table->foreign('vente_id')
+            $table->uuid('operation_id');
+            $table->foreign('operation_id')
             ->references('id')
-            ->on('ventes')
+            ->on('operations')
             ->onDelete('cascade');
 
-            $table->primary(['type_id', 'vente_id']);
+            $table->primary(['type_id', 'operation_id']);
         });
     }
 
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('type_vente');
+        Schema::dropIfExists('operation_type');
     }
 };

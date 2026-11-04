@@ -49,6 +49,7 @@ class ProduitController extends Controller
                 $image->move($path, $imageName);
             }
         }
+        $data['user_id'] = auth()->user()->id;
         $produit = Produit::create($data);
         // $produit->types()->sync($request->validated('types'));
         return to_route('admin.produit.index')->with('success', 'Le produit a été créé');

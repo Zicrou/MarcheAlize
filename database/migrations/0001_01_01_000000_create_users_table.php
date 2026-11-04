@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone')->unique();
             $table->string('role')->default('user');
+            $table->uuid('team_id')->nullable();
+            $table->foreign('team_id')->references('id')->on('teams')->onDelete('Cascade');
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ventes', function (Blueprint $table) {
+        Schema::create('operations', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('designation')->nullable();
             $table->integer('nombre');
@@ -25,6 +25,8 @@ return new class extends Migration
             $table->dateTime('deleted_at')->nullable();
             $table->uuid('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->uuid('team_id');
+            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -34,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ventes');
+        Schema::dropIfExists('operations');
     }
 };

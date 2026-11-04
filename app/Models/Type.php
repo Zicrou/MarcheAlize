@@ -15,8 +15,8 @@ class Type extends Model
     use HasUuid;
     protected $fillable = ['name'];
 
-    public function ventes():HasMany
+    public function operations():HasMany
     {
-        return $this->hasMany(Vente::class);
+        return $this->hasMany(Operation::class);
     }
 }
