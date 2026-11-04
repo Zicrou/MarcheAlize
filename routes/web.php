@@ -7,9 +7,12 @@ use App\Http\Controllers\Admin\JournalController;
 use App\Http\Controllers\Admin\TypeController;
 use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\OperationController;
+use App\Http\Controllers\EquipeController;
+
 
 $idRegex   = '[0-9]+';
 $slugRegex = '[0-9a-z\-]+';
+$membre   = '[0-9a-z\-]+';
 
 Route::get('/', function () {
     return view('base');
@@ -42,6 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/equipe', [EquipeController::class, 'index'])->name('equipe.index');
+    Route::post('/equipe', [EquipeController::class, 'store'])->name('equipe.store');
+    Route::delete('/equipe/{membre}', [EquipeController::class, 'destroy'])->name('equipe.destroy');
+    Route::post('/equipe/add-member', [EquipeController::class, 'addMember'])->name('equipe.addMember');
+    Route::post('/equipe/invite', [EquipeController::class, 'invite'])->name('equipe.invite');
 });
 
 require __DIR__.'/auth.php';
