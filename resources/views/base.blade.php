@@ -12,45 +12,40 @@
 </head>
 <body>
   @php
-    $route = request()->route()->getName();
+    $route = request()->route()?->getName() ?? '';
   @endphp
   <header>
-    <nav class="navbar navbar-expand-lg bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
       <div class="container">
-        <a class="navbar-brand" href="#">Commerçame</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand fw-bold fs-4 text-uppercase" href="{{ url('/') }}">Commerçame</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Ouvrir le menu">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <div class="collapse navbar-collapse" id="mainNavbar">
+          <ul class="navbar-nav me-auto my-2 my-lg-0">
             <li class="nav-item">
-              <a href="{{ route("admin.produit.index")}}" @class(["nav-link", "text-white", "fs-5", "active" => str_contains($route, 'produit.')]) aria-current="page">Stock</a>
+              <a href="{{ url('/') }}" @class(["nav-link", "px-lg-3", "active" => $route === ''])>Accueil</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle px-lg-3 {{ str_contains($route, 'produit.') || str_contains($route, 'type.') || str_contains($route, 'operation.') || str_contains($route, 'depense.') || str_contains($route, 'journal.') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Gestion
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark shadow">
+                <li><a href="{{ route('admin.produit.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'produit.')])>Stock</a></li>
+                <li><a href="{{ route('admin.type.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'type.')])>Types</a></li>
+                <li><a href="{{ route('operation.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'operation.')])>Opérations</a></li>
+                <li><a href="{{ route('depense.depense.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'depense.')])>Dépenses</a></li>
+                <li><a href="{{ route('admin.journal.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'journal.')])>Journal</a></li>
+              </ul>
             </li>
             <li class="nav-item">
-              <a href="{{ route("admin.type.index")}}" @class(["nav-link", "text-white", "fs-5", "active" => str_contains($route, 'type.')]) aria-current="page">Types</a>
-            </li>
-            <li class="nav-item">
-              <a href="{{ route("operation.index")}}" @class(["nav-link", "text-white", "fs-5", "active" => str_contains($route, 'operation.')]) aria-current="page">Opérations</a>
-            </li>
-            <li class="nav-item">
-              <a href="{{ route("depense.depense.index")}}" @class(["nav-link", "text-white", "fs-5", "active" => str_contains($route, 'depense.')]) aria-current="page">Dépenses</a>
-            </li>
-            <li class="nav-item">
-              <a href="{{ route("admin.journal.index")}}" @class(["nav-link", "text-white", "fs-5", "active" => str_contains($route, 'journal.')]) aria-current="page">Journal</a>
-            </li> 
-            <li class="nav-item col-xm-3">
-              <a href="#" @class(["nav-link", "bg-info btn link-underline-info"," px-4", "text-white", "fs-5", "active" => str_contains($route, 'contact.')]) aria-current="page">Contact</a>
+              <a href="#" class="nav-link px-lg-3">Contact</a>
             </li>
           </ul>
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            {{-- Login And Registration button --}}
-            <li class="nav-item">
-              <a href="{{ route("login")}}" @class(["nav-link", "bg-info btn","mx-2 px-4","link-underline-info", "text-white", "fs-5", "active" => str_contains($route, 'login.')]) aria-current="page">Se connecter</a>
-            </li> 
-            <li class="nav-item">
-              <a href="{{ route("register")}}" @class(["nav-link", "btn","mx-2 px-4", "text-white", "fs-5", "active" => str_contains($route, 'login.')]) aria-current="page">S'inscrire</a>
-            </li> 
-          </ul>
+          <div class="d-flex flex-column flex-lg-row gap-2">
+            <a href="{{ route('login') }}" class="btn btn-outline-light">Se connecter</a>
+            <a href="{{ route('register') }}" class="btn btn-info text-dark">S'inscrire</a>
+          </div>
         </div>
       </div>
     </nav>
@@ -79,7 +74,5 @@
         // new TomSelect('selectProduit');
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </body>
 </html>

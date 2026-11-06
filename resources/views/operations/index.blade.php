@@ -31,14 +31,14 @@
                     <div class="row">
                         <div class="col-12 col-lg-7 my-3 d-flex justify-content-start">
                             <h1 class="">
-                                <u class="mx-2 px-0">Total: </u>
+                                Total: 
                                 {{ number_format($totalOfTheDay, thousands_separator: ' ' )}} FCFA
                             </h1>
                         </div>
                         <div class="col-12 col-lg-5">
-                            <h5 class="d-flex col-xm-6 justify-content-end"><u class="px-3">Vente:</u>{{ number_format($totalVenteOfTheDay, thousands_separator: ' ' )}} FCFA</h5>
-                            <h5 class="d-flex col-xm-6 justify-content-end"><u class="px-3">Réparation:</u> {{ number_format($totalReparationOfTheDay, thousands_separator: ' ' )}} FCFA</h5>
-                            <h5 class="d-flex col-xm-6 justify-content-end"><u class="px-3">Dépenses journaliére:</u> {{ number_format($depenseTotal, thousands_separator: ' ' )}} FCFA</h5>
+                            <h5 class="d-flex col-xm-6 justify-content-end">Vente:{{ number_format($totalVenteOfTheDay, thousands_separator: ' ' )}} FCFA</h5>
+                            <h5 class="d-flex col-xm-6 justify-content-end">Réparation: {{ number_format($totalReparationOfTheDay, thousands_separator: ' ' )}} FCFA</h5>
+                            <h5 class="d-flex col-xm-6 justify-content-end">Dépenses journaliére: {{ number_format($depenseTotal, thousands_separator: ' ' )}} FCFA</h5>
                         </div>
                     </div>
                 </div>
@@ -51,45 +51,56 @@
     <a href="{{ route('operation.create')}}" class="btn btn-primary col-md-2 mb-3 fs-5">Faire une vente</a>
 </div>
 
-    @foreach ($operations as $operation)
-        <div class="card mx-auto row col-12 col-lg-12 mb-5"  style="background-color: #F2F2F2;">
-            <div class="card-header text-dark">
-                @if ($operation->designation)
-                    <p class="card-text fs-3 text-center"><span class="fw-bold">Désignation:</span> {{ $operation->designation }}</p>
-                @elseif ($operation->produit_id)
-                <span class="card-text d-flex mx-auto col-3 col-lg-1 fw-bold fs-3 badge text-bg-primary mb-3">
-                    Stock
-                </span> 
-                    <p class="card-text fs-3 text-center"><span class="fw-bold">Désignation: </span> {{ $operation->produit->designation }}
-                    </p>
-                @endif
-                @foreach ( $operation->types as $type )
-                    <span class="d-flex w-100 align-items-center justify-content-center"></span>
-                    <p class="card-text fs-3 text-center"><span class="fw-bold">Type: </span> {{ $type->name }}</p>
-                @endforeach ()
-                <p class="card-text fs-3 text-center"><span class="fw-bold">Nombre: </span> {{ $operation->nombre }}</p>
-                <p class="card-text fs-3 text-center"><span class="fw-bold">Prix: </span> {{ $operation->prix }}</p>
-                <p class="card-text fs-3 text-center"><span class="fw-bold">Total: </span> {{ $total = $operation->prix * $operation->nombre }} FCFA</p>
-                <p class="card-text fs-3 text-center"><span class="fw-bold">User: </span> {{ $operation->user->name }}</p>
+    <div class="card mb-4">
+        <div class="card-body p-2 p-md-4">
+        <div class="text-center">
+            <p class="fs-5 mb-3">Ventes et réparations du jour :</p>
+            <div class="table-responsive">
+            <table class="table table-bordered w-100 fs-5 align-middle mb-0" style="min-width: 760px;">
+                <thead>
+                    <tr>
+                        <th>Intitulé</th>
+                        <th>Type</th>
+                        <th>Nombre</th>
+                        <th>Prix</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($operations as $operation)
+                        <tr>
+                            @if ($operation->designation)
+                                <td>{{ $operation->designation }}</td>
+                            @else
+                                <td>{{ $operation->produit->designation }}</td>
+                            @endif
+                            @foreach ($operation->types as $type )
+                                <td>{{ $type->name }}</td>
+                            @endforeach ()
+                            <td>{{ $operation->nombre }}</td>
+                            <td>{{ number_format($operation->prix, thousands_separator: ' ') }} FCFA</td>
+                            <td>{{ number_format($operation->prix * $operation->nombre, thousands_separator: ' ') }} FCFA</td>
+                            <td>
+                                <form action="{{ route('operation.destroy', $operation->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm text-nowrap">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
             </div>
-            <div class="card-footer">
-                <div class="row d-flex justify-content-evenly">
-                    <div class="col-6 col-lg-5">
-                        <a href="{{ route('operation.edit', $operation) }}" class="text-center btn btn-primary">Editer</a>
-                    </div>
-                    <div class="col-6 col-lg-5 d-flex justify-content-center">
-                        <form action="{{ route('operation.destroy', $operation) }}" method="post">
-                            @csrf
-                            @method('delete')
-                            <button class="text-center btn btn-danger">Annuler</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>    
-    @endforeach
+        </div>
+        </div>
+    </div>
+
     <div class="my-4">
         {{ $operations->links() }}
     </div>
-@endsection
 
+
+
+@endsection
