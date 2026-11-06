@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TeamInvitation extends Model
 {
+    use HasUuid;
+    use SoftDeletes;
     protected $fillable = [
         'status',
         'team_id',

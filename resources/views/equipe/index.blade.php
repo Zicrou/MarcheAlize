@@ -16,7 +16,7 @@
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl">
                     Liste des membres de l'équipe :
-                    <table class="table-auto border-separate border-spacing-2 dark:border-gray-500 w-full mt-4">
+                    <table class="table-auto border-separate border-spacing-2 dark:border-gray-500">
                         <thead>
                             <tr>
                                 <th class="border border-gray-400">Nom</th>
@@ -48,6 +48,71 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div class="max-w-xl">
+                    Demandes d'invitation en attente :
+                    @if ($invitations->isEmpty())
+                        <p>Aucune demande d'invitation en attente.</p>
+                    @else
+                        <table class="table-auto border-separate border-spacing-2 dark:border-gray-500">
+                            <thead>
+                                <tr>
+                                    <th class="border border-gray-400">Nom</th>
+                                <th class="border border-gray-400">Téléphone</th>
+                                <th class="border border-gray-400">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($invitations as $invitation)
+                                <tr>
+                                    <td class="border border-gray-100">{{ $invitation->inviter->name }}</td>
+                                    <td class="border border-gray-100">{{ $invitation->inviter->phone }}</td>
+                                    <td class="border border-gray-100">
+                                        <form action="{{ route('equipe.accepterInvitation', $member->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            @method('post')
+                                                <select name="accepterInvitation" id="">
+                                                    <option value="">Choisir</option>
+                                                    <option value="accepter">Accepter</option>
+                                                    <option value="refuser">Refuser</option>
+                                                </select>
+                                                <div class="" hidden>
+                                                    <label for="inviter"></label>
+                                                    <input type="text" name="inviter" value="{{ $invitation->inviter->id }}">
+                                                </div>
+
+                                                <button type="submit" class="text-blue-500 hover:text-blue-700">Soumettre</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @endif
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div class="max-w-xl">
+                    Vous êtes dans les équipes suivantes :
+                    @if ($mesEquipes->isEmpty())
+                        <p>Vou n' êtes dans aucune équipe.</p>
+                    @else
+                        <table class="table-auto border-separate border-spacing-2 dark:border-gray-500">
+                            <thead>
+                            </thead>
+                            <tbody>
+                                @foreach ($mesEquipes as $equipe)
+                                    <tr>
+                                        <td class="border border-gray-100">{{ $equipe->name }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
                 </div>
             </div>
 

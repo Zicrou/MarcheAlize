@@ -28,8 +28,10 @@ return new class extends Migration
             ->references('id')
             ->on('users')
             ->onDelete('cascade');
-            $table->string('status')->default('pending'); // pending, accepted, declined
+            $table->enum('status', ['en attente', 'accepter', 'refuser'])->default('en attente'); // pending, accepted, declined
+// pending, accepted, declined
             $table->timestamp('expires_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
             $table->unique(['team_id', 'user_id']);

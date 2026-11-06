@@ -9,7 +9,7 @@
         @csrf
         <div>
             <x-input-label for="ajouter_un_membre" :value="__('Ajouter un membre')" />
-            <x-text-input id="ajouter_un_membre" name="membre" type="text" class="mt-1 block w-full" required autofocus autocomplete="membre" />
+            <x-text-input id="ajouter_un_membre" name="membre" type="text" :value="old('membre')" class="mt-1 block w-full" required autofocus autocomplete="membre" />
             <x-input-error class="mt-2" :messages="$errors->get('membre')" />
         </div>
 

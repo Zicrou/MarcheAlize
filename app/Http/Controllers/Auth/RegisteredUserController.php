@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $team = Team::create([
-            'name' => $request->name . "'s Team",
+            'name' => "Equipe de " . $request->name,
         ]);
         $user = User::create([
             'name' => $request->name,

@@ -24,7 +24,6 @@ return new class extends Migration
             ->on('users')
             ->onDelete('cascade');
             $table->string('role')->default('membre');
-            $table->enum('status', ['pending', 'active'])->default('pending');
             $table->softDeletes();
             $table->timestamps();
 

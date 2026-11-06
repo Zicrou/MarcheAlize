@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/equipe', [EquipeController::class, 'index'])->name('equipe.index');
     Route::post('/equipe', [EquipeController::class, 'store'])->name('equipe.store');
     Route::delete('/equipe/{membre}', [EquipeController::class, 'destroy'])->name('equipe.destroy');
-    Route::post('/equipe/add-member', [EquipeController::class, 'addMember'])->name('equipe.addMember');
+    Route::post('/equipe/accepter-invitation', [EquipeController::class, 'accepterInvitation'])->name('equipe.accepterInvitation');
     Route::post('/equipe/invite', [EquipeController::class, 'invite'])->name('equipe.invite');
 });
 
