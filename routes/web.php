@@ -18,7 +18,7 @@ Route::get('/', function () {
     return view('base');
 });
 
-Route::prefix('admin')->name('admin.')->group(function (){
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (){
     Route::resource('produit', ProduitController::class)->except(['show']);
     Route::resource('type', TypeController::class)->except(['show']);
     Route::resource('journal', JournalController::class);
@@ -27,14 +27,14 @@ Route::get('produit/{id}', [ProduitController::class, 'destroyImage'])
     ->name('produit.destroyImage')
     ->where([
         'id' => $idRegex,
-]);
+])->middleware(['auth', 'verified']);
 
-Route::prefix('depense')->name('depense.')->group(function (){
+Route::middleware('auth')->name('depense.')->group(function (){
     Route::resource('depense', DepenseController::class);
 });
 
 // Route::prefix('operation')->name('operation.')->group(function (){
-    Route::resource('operation', OperationController::class);
+    Route::resource('operation', OperationController::class)->middleware(['auth', 'verified']);
 // });
 
 Route::get('/dashboard', function () {
