@@ -27,7 +27,7 @@
               <a href="{{ url('/') }}" @class(["nav-link", "px-lg-3", "active" => $route === ''])>Accueil</a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle px-lg-3 {{ str_contains($route, 'produit.') || str_contains($route, 'type.') || str_contains($route, 'operation.') || str_contains($route, 'depense.') || str_contains($route, 'journal.') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link dropdown-toggle px-lg-3 {{ str_contains($route, 'produit.') || str_contains($route, 'type.') || str_contains($route, 'operation.') || str_contains($route, 'depense.') || str_contains($route, 'journal.') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 Gestion
               </a>
               <ul class="dropdown-menu dropdown-menu-dark shadow">
@@ -35,7 +35,13 @@
                 <li><a href="{{ route('admin.type.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'type.')])>Types</a></li>
                 <li><a href="{{ route('operation.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'operation.')])>Opérations</a></li>
                 <li><a href="{{ route('depense.depense.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'depense.')])>Dépenses</a></li>
-                <li><a href="{{ route('admin.journal.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'journal.')])>Journal</a></li>
+                <li class="dropend">
+                  <a class="dropdown-item dropdown-toggle {{ str_contains($route, 'journal.') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Journal</a>
+                  <ul class="dropdown-menu dropdown-menu-dark shadow">
+                    <li><a href="{{ route('admin.journal.operations') }}" @class(["dropdown-item", "active" => str_contains($route, 'operation.')])>Opérations</a></li>
+                    <li><a href="{{ route('admin.journal.depenses') }}" @class(["dropdown-item", "active" => str_contains($route, 'depense.')])>Dépenses</a></li>
+                  </ul>
+                </li>
               </ul>
             </li>
             <li class="nav-item">
@@ -43,8 +49,16 @@
             </li>
           </ul>
           <div class="d-flex flex-column flex-lg-row gap-2">
-            <a href="{{ route('login') }}" class="btn btn-outline-light">Se connecter</a>
-            <a href="{{ route('register') }}" class="btn btn-info text-dark">S'inscrire</a>
+            @guest
+              <a href="{{ route('login') }}" class="btn btn-outline-light">Se connecter</a>
+              <a href="{{ route('register') }}" class="btn btn-info text-dark">S'inscrire</a>
+            @else
+              <span class="navbar-text text-light">Bonjour, {{ Auth::user()->name }}</span>
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-outline-light">Se déconnecter</button>
+              </form>
+            @endguest
           </div>
         </div>
       </div>

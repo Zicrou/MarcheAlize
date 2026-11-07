@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OperationFormRequest extends FormRequest
@@ -17,13 +18,13 @@ class OperationFormRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'nombre' => ['required', 'integer', 'min:1'],
-            'prix' => ['required', 'integer', 'min:3'],
+            'prix' => ['required', 'decimal:2', 'min:0'],
             'user_id' => ['string', 'exists:users,id', 'required'],
             'designation' => ['string', 'nullable'],
             'produit_id' => ['string',  'nullable'],

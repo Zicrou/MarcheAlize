@@ -22,7 +22,7 @@
                 @foreach ($depenses as $depense)
                     <tr>
                         <td>{{ $depense->libelle }}</td>
-                        <td>{{ number_format($depense->montant, thousands_separator: ' ') }}</td>
+                        <td>{{ number_format($depense->montant, thousands_separator: ' ', decimals:2, decimal_separator: '.') }}</td>
                         <td>
                             <div class="d-flex gap-2 w-100 justify-content-end">
                                 <a href="{{ route('depense.depense.edit', $depense) }}" class="btn btn-primary">Editer</a>

@@ -21,7 +21,9 @@ Route::get('/', function () {
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (){
     Route::resource('produit', ProduitController::class)->except(['show']);
     Route::resource('type', TypeController::class)->except(['show']);
-    Route::resource('journal', JournalController::class);
+    Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
+    Route::get('journal/depenses', [JournalController::class, 'journalDepense'])->name('journal.depenses');
+    Route::get('journal/operations', [JournalController::class, 'journalOperation'])->name('journal.operations');
 });
 Route::get('produit/{id}', [ProduitController::class, 'destroyImage'])
     ->name('produit.destroyImage')

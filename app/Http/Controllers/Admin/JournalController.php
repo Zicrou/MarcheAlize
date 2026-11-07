@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Vente;
 use App\Models\Depense;
+use App\Models\Operation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,51 +17,61 @@ class JournalController extends Controller
     {
         $depenseTotal = 0;
         // Add Depenses de chaque jour dans Journal
-        
+
         $startDate = now()->startOfDay();
         $endDate = now()->endOfDay();
         $depenses = Depense::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
-        $queryDepenses = $depenses->groupBy(function($m) {
+        $queryDepenses = $depenses->groupBy(function ($m) {
             return $m->created_at->format('d-m-Y');
         });
         $journal = [];
-        
-        $vents = Vente::all();
-        $ventes = $vents->groupBy(function($m) {
+
+        $oper = Operation::all();
+        $operations = $oper->groupBy(function ($m) {
             return $m->created_at->format('d-m-Y');
         });
 
-        $deps = Depense::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
-        $allDepenses = $deps->groupBy(function($m) {
+        $deps = Depense::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->paginate(1);
+        $allDepenses = $deps->groupBy(function ($m) {
             return $m->created_at->format('d-m-Y');
         });
-        
+
         foreach ($allDepenses as $date => $depenses) {
             $journal[$date]['depenses'] = $depenses;
-            $journal[$date]['ventes'] = collect();
+            $journal[$date]['operations'] = collect();
         }
 
-        foreach ($ventes as $date => $ventesDuJour) {
+        foreach ($operations as $date => $operationsDuJour) {
             if (isset($journal[$date])) {
-                $journal[$date]['ventes'] = $ventesDuJour;
+                $journal[$date]['operations'] = $operationsDuJour;
             } else {
                 $journal[$date]['depenses'] = collect();
-                $journal[$date]['ventes'] = $ventesDuJour;
+                $journal[$date]['operations'] = $operationsDuJour;
             }
-            
+
         }
         // $vents_year = Vente::where('statut', 1)->get();
-        $ventes_year = $vents->groupBy(function($m) {
+        $operations_year = $oper->groupBy(function ($m) {
             return $m->created_at->format('Y');
         });
-        
-        return view("admin.journaux.index", [
-            'ventes' =>   $ventes, 
-            'ventes_year' => $ventes_year,
-            'journal' => $journal, 
-            'depenses' => $allDepenses, 
+
+        return view('admin.journaux.index', [
+            'operations' => $operations,
+            'operations_year' => $operations_year,
+            'journal' => $journal,
+            'depenses' => $allDepenses,
         ]);
     }
+
+    public function journalDepense(){
+        $depenses = Depense::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->paginate(10);
+        return view('admin.journaux.depenses.index', compact('depenses'));
+    }
+    public function journalOperation(){
+        $operations = Operation::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->paginate(10);
+        return view('admin.journaux.operations.index', compact('operations'));
+    }
+
 
     /**
      * Show the form for creating a new resource.

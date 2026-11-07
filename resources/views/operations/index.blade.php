@@ -32,13 +32,13 @@
                         <div class="col-12 col-lg-7 my-3 d-flex justify-content-start">
                             <h1 class="">
                                 Total: 
-                                {{ number_format($totalOfTheDay, thousands_separator: ' ' )}} FCFA
+                                {{ number_format($totalOfTheDay, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA
                             </h1>
                         </div>
                         <div class="col-12 col-lg-5">
-                            <h5 class="d-flex col-xm-6 justify-content-end">Vente:{{ number_format($totalVenteOfTheDay, thousands_separator: ' ' )}} FCFA</h5>
-                            <h5 class="d-flex col-xm-6 justify-content-end">Réparation: {{ number_format($totalReparationOfTheDay, thousands_separator: ' ' )}} FCFA</h5>
-                            <h5 class="d-flex col-xm-6 justify-content-end">Dépenses journaliére: {{ number_format($depenseTotal, thousands_separator: ' ' )}} FCFA</h5>
+                            <h5 class="d-flex col-xm-6 justify-content-end">Vente:{{ number_format($totalVenteOfTheDay, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA</h5>
+                            <h5 class="d-flex col-xm-6 justify-content-end">Réparation: {{ number_format($totalReparationOfTheDay, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA</h5>
+                            <h5 class="d-flex col-xm-6 justify-content-end">Dépenses journaliére: {{ number_format($depenseTotal, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA</h5>
                         </div>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
 </section>
 
 <div class="row col-10 mx-auto d-flex justify-content-center">
-    <a href="{{ route('operation.create')}}" class="btn btn-primary col-md-2 mb-3 fs-5">Faire une vente</a>
+    <a href="{{ route('operation.create')}}" class="btn btn-primary col-md-2 mb-3 fs-5">Ajouter</a>
 </div>
 
     <div class="card mb-4">
@@ -75,12 +75,11 @@
                             @else
                                 <td>{{ $operation->produit->designation }}</td>
                             @endif
-                            @foreach ($operation->types as $type )
-                                <td>{{ $type->name }}</td>
-                            @endforeach ()
+                            <td>{{ $operation->type }}</td>
                             <td>{{ $operation->nombre }}</td>
-                            <td>{{ number_format($operation->prix, thousands_separator: ' ') }} FCFA</td>
-                            <td>{{ number_format($operation->prix * $operation->nombre, thousands_separator: ' ') }} FCFA</td>
+                            
+                            <td>{{ number_format($operation->prix, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA</td>
+                            <td>{{ number_format($operation->prix * $operation->nombre, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA</td>
                             <td>
                                 <form action="{{ route('operation.destroy', $operation->id) }}" method="POST" class="d-inline">
                                     @csrf
