@@ -22,6 +22,10 @@ Route::prefix('v1')->name('api.v1.')->group(function (){
         Route::get('journal/depenses', [JournalController::class, 'journalDepense'])->name('journal.depenses');
         Route::get('journal/operations', [JournalController::class, 'journalOperation'])->name('journal.operations');
         Route::resource('depense', DepenseController::class);
+        Route::get('/equipe', [EquipeController::class, 'index'])->name('equipe.index');
+        Route::delete('/equipe/{membre}', [EquipeController::class, 'destroy'])->name('equipe.destroy');
+        Route::post('/equipe/accepter-invitation', [EquipeController::class, 'accepterInvitation'])->name('equipe.accepterInvitation');
+        Route::post('/equipe/invite', [EquipeController::class, 'invite'])->name('equipe.invite');
 
         });
     Route::post('/register', [\App\Http\Controllers\Api\v1\AuthController::class, 'register']);

@@ -48,7 +48,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/equipe', [EquipeController::class, 'index'])->name('equipe.index');
-    Route::post('/equipe', [EquipeController::class, 'store'])->name('equipe.store');
     Route::delete('/equipe/{membre}', [EquipeController::class, 'destroy'])->name('equipe.destroy');
     Route::post('/equipe/accepter-invitation', [EquipeController::class, 'accepterInvitation'])->name('equipe.accepterInvitation');
     Route::post('/equipe/invite', [EquipeController::class, 'invite'])->name('equipe.invite');
