@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
+use Laravel\Sanctum\HasApiTokens;
 
 
 #[Fillable(['name', 'email', 'password', 'phone', 'role', 'team_id'])]
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasUuid, softDeletes;
+    use HasFactory, Notifiable, HasUuid, softDeletes, HasApiTokens;
 
     /**
      * Get the attributes that should be cast.
