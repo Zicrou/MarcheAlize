@@ -14,19 +14,9 @@ class TypeController extends Controller
      */
     public function index()
     {
-        return view("admin.types.index",
-    ["types" => Type::paginate(25) ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $type = new Type();
-        return view('admin.types.form', [
-            'type' => $type
-        ]);
+        return[
+            "types" => Type::all()
+        ];
     }
 
     /**
@@ -35,17 +25,11 @@ class TypeController extends Controller
     public function store(TypeFormRequest $request)
     {
         $type = Type::create($request->validated());
-        return to_route('admin.type.index')->with('success', 'Le type a été créé');
-    }
-
-    
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Type $type)
-    {
-        return view('admin.types.form', ['type' => $type]);
+        return [
+            "type" => $type,
+            'message' => 'Le type a été créé',
+            'success' => true
+            ];
     }
 
     /**
@@ -54,7 +38,11 @@ class TypeController extends Controller
     public function update(TypeFormRequest $request, Type $type)
     {
         $type->update($request->validated());
-        return to_route('admin.type.index')->with('success', 'Le type a été modifié');
+        return [
+            "type" => $type,
+            'message' => 'Le type a été modifié',
+            'success' => true
+            ];
     }
 
     /**
@@ -62,13 +50,18 @@ class TypeController extends Controller
      */
     public function destroy(Type $type)
     {
-        // Update instead of delete
-        // $type->update(['statut' => 0]);
-        $type_vente = \DB::table('type_vente')->where('type_id', $type->id)->first();
-        if($type_vente){
-            return to_route('admin.type.index')->with('error', 'Le type est utilisé dans une vente');
+        $operation_type = DB::table('operation_type')->where('type_id', $type->id)->count();
+        
+        if($operation_type != 0){
+            return [
+                "type" => $type,
+                'error', 'Le type est utilisé dans une vente'
+            ];
         }
         $type->delete();
-        return to_route('admin.type.index')->with('success', 'Le type a été supprimé');
+        return [
+            "success" => true,
+            'message' => 'Le type a été supprimé'
+            ];
     }
 }
