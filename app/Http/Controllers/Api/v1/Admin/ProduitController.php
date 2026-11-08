@@ -77,8 +77,14 @@ class ProduitController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Produit $produit)
+    public function destroy($produit)
     {
+        $produit_exist = Produit::find($produit);
+        if(!$produit_exist){
+            return [
+                "message" => "Produit introuvable"
+            ];
+        }
         $produit->delete();
         return [
             "success" => true,
@@ -88,16 +94,19 @@ class ProduitController extends Controller
 
     public function destroyImage($produit)
     {
-        $produitImage = Produit::where('id', $produit)->first();
-        if (File::exists($produitImage->image)) {
-            File::delete($produitImage->image);
-        }else{
-            return ["message" => "Pas d'image. Veuillez réactualiser"];
+        $produitImage = Produit::find($produit);
+        if($produitImage){
+            if (File::exists($produitImage->image)) {
+                File::delete($produitImage->image);
+            }else{
+                return ["message" => "Pas d'image. Veuillez réactualiser"];
+            }
+            $produitImage->update(['image'=> '']);
+            return [
+                'message' => 'L\'image du produit a été supprimé',
+                "success" => true
+            ];
         }
-        $produitImage->update(['image'=> '']);
-        return [
-            'message' => 'L\'image du produit a été supprimé',
-            "success" => true
-        ];
+        return ["message" => "Ce produit n'existe pas"];
     }
 }
