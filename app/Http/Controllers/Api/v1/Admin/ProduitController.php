@@ -17,20 +17,9 @@ class ProduitController extends Controller
      */
     public function index()
     {
-        return view("admin.produits.index",
-    ["produits" => Produit::orderBy('created_at', 'desc')->paginate(25) ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        
-        return view('admin.produits.form', [
-            'produit' => new Produit(),
-            // 'types' => Type::pluck('name', 'id'),
-        ]);
+        return [
+            "produits" => Produit::orderBy('created_at', 'desc')->get()
+        ];
     }
 
     /**
@@ -42,8 +31,8 @@ class ProduitController extends Controller
         if (request()->hasFile('image')) {
             if($image = $request->file('image')){
                 $filename = $image->getClientOriginalName();
-                $imageName = time().'-'.uniqid().'_'.$filename;
-                $path = 'pictures/produit/';
+                $imageName = time().$filename;
+                $path = 'photos/produits/' . $request->user()->id . '/';
                 $data['image'] = $path.$imageName;
                 // $image->storeAs($path, $imageName, 'public'); 
                 $image->move($path, $imageName);
@@ -51,21 +40,11 @@ class ProduitController extends Controller
         }
         $data['user_id'] = auth()->user()->id;
         $produit = Produit::create($data);
-        // $produit->types()->sync($request->validated('types'));
-        return to_route('admin.produit.index')->with('success', 'Le produit a été créé');
-    }
-
-    
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Produit $produit)
-    {
-        return view('admin.produits.form', [
-            'produit' => $produit, 
-            // 'types' => Type::pluck('name', 'id'),
-        ]);
+        return [
+            "produit" => $produit,
+            'message' => 'Le produit a été créé',
+            "success" => true
+        ];
     }
 
     /**
@@ -77,10 +56,9 @@ class ProduitController extends Controller
         if (request()->hasFile('image')) {
             if($image = $request->file('image')){
                 $filename = $image->getClientOriginalName();
-                $imageName = time().'-'.uniqid().'_'.$filename;
-                $path = 'pictures/produit/';
+                $imageName = time().$filename;
+                $path = 'photos/produits/' . $request->user()->id . '/';
                 $data['image'] = $path.$imageName;
-                // $image->storeAs($path, $imageName, 'public'); 
                 $image->move($path, $imageName);
             }
         }
@@ -88,8 +66,11 @@ class ProduitController extends Controller
             File::delete($produit->image);
         }
         $produit->update($data);
-        // $produit->types()->sync($request->validated('types'));
-        return to_route('admin.produit.index')->with('success', 'Le produit a été modifié');
+        return [
+            "produit" => $produit,
+            'message' => 'Le produit a été modifié',
+            "success" => true
+        ];
 
     }
 
@@ -98,12 +79,11 @@ class ProduitController extends Controller
      */
     public function destroy(Produit $produit)
     {
-        if (File::exists($produit->image)) {
-            File::delete($produit->image);
-        }
-        dd($produit->ventes);
-        // $produit->delete();
-        return to_route('admin.produit.index')->with('success', 'Le produit a été supprimé');
+        $produit->delete();
+        return [
+            "success" => true,
+            'message' => 'Le produit a été supprimé'
+        ];
     }
 
     public function destroyImage($produit)
@@ -111,8 +91,13 @@ class ProduitController extends Controller
         $produitImage = Produit::where('id', $produit)->first();
         if (File::exists($produitImage->image)) {
             File::delete($produitImage->image);
+        }else{
+            return ["message" => "Pas d'image. Veuillez réactualiser"];
         }
         $produitImage->update(['image'=> '']);
-        return to_route('admin.produit.index')->with('success', 'Le produit a été supprimé');
+        return [
+            'message' => 'L\'image du produit a été supprimé',
+            "success" => true
+        ];
     }
 }

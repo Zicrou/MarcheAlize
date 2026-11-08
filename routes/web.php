@@ -10,7 +10,7 @@ use App\Http\Controllers\OperationController;
 use App\Http\Controllers\EquipeController;
 
 
-$idRegex   = '[0-9]+';
+$idRegex   = '[0-9a-z\-]+';
 $slugRegex = '[0-9a-z\-]+';
 $membre   = '[0-9a-z\-]+';
 
@@ -25,7 +25,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (){
     Route::get('journal/depenses', [JournalController::class, 'journalDepense'])->name('journal.depenses');
     Route::get('journal/operations', [JournalController::class, 'journalOperation'])->name('journal.operations');
 });
-Route::get('produit/{id}', [ProduitController::class, 'destroyImage'])
+Route::post('produit/{id}', [ProduitController::class, 'destroyImage'])
     ->name('produit.destroyImage')
     ->where([
         'id' => $idRegex,
