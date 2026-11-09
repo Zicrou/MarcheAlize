@@ -28,7 +28,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (){
         Route::resource('operations', OperationController::class);
        
         // Journaux
-        // Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
+        Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
         Route::get('journal/depenses', [JournalController::class, 'journalDepense'])->name('journal.depenses');
         Route::get('journal/operations', [JournalController::class, 'journalOperation'])->name('journal.operations');
         
