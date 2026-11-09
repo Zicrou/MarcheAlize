@@ -48,7 +48,6 @@ class EquipeController extends Controller
 
     public function accepterInvitation(Request $request)
     {
-        // dd($request->all());
         $validated = $request->validate([
             'inviter' => ['required', 'string', 'exists:users,id'],
             'accepterInvitation' => ['required', 'in:en attente,accepter,refuser']
@@ -81,7 +80,6 @@ class EquipeController extends Controller
         $team->users()->syncWithoutDetaching([
             $request->user()->id => ['role' => 'membre'],
         ]);
-
         return back()->with('success', 'Le membre a été ajouté à votre équipe.');
     }
 

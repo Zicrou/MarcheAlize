@@ -19,9 +19,9 @@ class DepenseController extends Controller
         $startDate = now()->startOfDay();
         $endDate = now()->endOfDay();
         $query = Depense::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc');
-        return view("depenses.index", [
-            "depenses" => $query->paginate(10),
-        ]);
+        return[
+            "depenses" => $query->get(),
+        ];
     }
 
     /**
@@ -43,8 +43,15 @@ class DepenseController extends Controller
      */
     public function store(DepenseFormRequest $request)
     {
-        $depense = Depense::create($request->validated());
-        return to_route('depense.depense.index')->with('success', 'La dépense a été créée');
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+        
+        $depense = Depense::create($data);
+        return [
+            "depense" => $depense,
+            'message' => 'La dépense a été créée',
+            "success" => true
+        ];
     }
 
     /**
@@ -60,7 +67,7 @@ class DepenseController extends Controller
      */
     public function edit(Depense $depense)
     {
-        return view('depenses.form', ['depense' => $depense]);
+        return ['depense' => $depense];
     }
 
     /**
@@ -69,15 +76,27 @@ class DepenseController extends Controller
     public function update(DepenseFormRequest $request, Depense $depense)
     {
         $depense->update($request->validated());
-        return to_route('depense.depense.index')->with('success', 'La dépense a été modifiée');
+        return [
+            'depense' => $depense,
+            'message' => 'La dépense a été modifiée',
+            'success' => true
+        ];
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Depense $depense)
+    public function destroy(String $depense)
     {
-        $depense->delete();
-        return to_route('depense.depense.index')->with('success', 'Le type a été supprimé');
+        $depens = Depense::find($depense);
+        if($depens){
+            $depens->delete();
+            return [
+                'message' => 'La dépense a été supprimé',
+                'success' => true
+            ];
+        }else{
+            return ["message" => "Impossible d'effectuer cette opération"];
+        }
     }
 }

@@ -25,7 +25,7 @@ class DepenseFormRequest extends FormRequest
         return [
             'libelle' => ['required', 'string'],
             'montant' => ['required', 'decimal:2', 'min:0'],
-            'user_id' => ['exists:users,id', 'required'],
+            
         ];
     }
 }
