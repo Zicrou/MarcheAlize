@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Mail;
 
 class EquipeController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
         $team = $request->user()->team;
         // dd($team->users());
@@ -39,11 +39,11 @@ class EquipeController extends Controller
             ->get()
             ->pluck('team');
         
-        return view('equipe.index', [
+        return[
             'liste_membres' => $team->users,
             'invitations' => $invitations,
             'mesEquipes' => $mesEquipes,
-        ]);
+        ];
     }
 
     public function accepterInvitation(Request $request)
@@ -62,30 +62,28 @@ class EquipeController extends Controller
         $invitation = TeamInvitation::where('team_id', $team->id)
             ->where('user_id', $request->user()->id)
             ->first();
-        if ($validated['accepterInvitation'] === 'refuser') {
-            if ($invitation) {
+        if ($invitation) {
+            if ($validated['accepterInvitation'] === 'refuser') {
                 $invitation->status = 'refuser';
                 $invitation->save();
+                return ['message' => 'Vous avez refusé l\'invitation à rejoindre l\'équipe.'];
+            }else if ($validated['accepterInvitation'] === 'accepter') {
+                    $invitation->status = 'accepter';
+                    $invitation->save();
+                    $team->users()->syncWithoutDetaching([
+                        $request->user()->id => ['role' => 'membre'],
+                    ]);
+                    return ['message' => 'Le membre a été ajouté à votre équipe.'];
+            } else {
+                return ['message' => 'Valeur invalide pour accepter/refuser l\'invitation.'];
             }
-            return back()->with('success', 'Vous avez refusé l\'invitation à rejoindre l\'équipe.');
-        }else if ($validated['accepterInvitation'] === 'accepter') {
-            if ($invitation) {
-                $invitation->status = 'accepter';
-                $invitation->save();
-            }
-        } else {
-            return back()->withErrors(['accepterInvitation' => 'Valeur invalide pour accepter/refuser l\'invitation.']);
         }
-
-        $team->users()->syncWithoutDetaching([
-            $request->user()->id => ['role' => 'membre'],
-        ]);
-        return back()->with('success', 'Le membre a été ajouté à votre équipe.');
     }
+
 
     public function invite(Request $request)
     {
-        $user1 = auth()->user();
+        $user1 = $request->user();
         $team = $user1->team; // adaptez selon votre relation
         if(!$team) {
             return back()->withErrors(['team' => 'Vous n\'avez pas d\'équipe.']);
@@ -116,10 +114,10 @@ class EquipeController extends Controller
                 // 'expires_at' => now()->addDays(7),
             ]
         );
-
-        // Mail::to($user2->email)->send(new TeamInvitationMail($invitation));
-
-        return back()->with('success', 'Invitation envoyée.');
+        return [
+            'invitation' => $invitation,
+            'message' =>'Invitation envoyée.'
+        ];
     }
 
     /**
