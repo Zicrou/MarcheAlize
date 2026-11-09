@@ -8,26 +8,25 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\api\v1\LoginFormRequest;
 use App\Http\Requests\api\v1\RegisterFormRequest;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Models\Team;
+
 class AuthController extends Controller 
 {
     public function register(RegisterFormRequest $request){
         $fields = $request->validated();
         
-        // $emailExists = User::where('email', $fields['email'])->exists();
-        // $phoneExists = User::where('phone', $fields['phone'])->exists();
-        // if($emailExists || $phoneExists){
-        //     return response()->json([
-        //         'message' => 'Email or phone already exists'
-        //     ], 422);
-        // }
-
+     
         $fields['password'] =  Hash::make($fields['password']);
-
+        $team = Team::create([
+            'name' => "Equipe de " . $request->name,
+        ]);
+        $fields['team_id'] = $team->id;
+        $fields['role'] = "Admin";
         $user = User::create($fields);
 
         $token = $user->createToken($request->name);
         return [
-            'user' => $user, 
+            'user' => $user->load('team'), 
             'token' => $token->plainTextToken
         ];
     }
@@ -43,7 +42,7 @@ class AuthController extends Controller
         $token = $userExists->createToken($userExists->name);
         $tokenFromRequest = PersonalAccessToken::findToken($token->plainTextToken);
         return [
-            'user' => $userExists, 
+            'user' => $userExists->load('team'), 
             'token' => $token->plainTextToken,
             'tokenFromRequest' => $tokenFromRequest,
             

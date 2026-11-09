@@ -24,11 +24,11 @@ class OperationFormRequest extends FormRequest
     {
         return [
             'nombre' => ['required', 'integer', 'min:1'],
-            'prix' => ['required', 'decimal:2', 'min:0'],
+            'prix' => ['required', 'decimal:2'],
             'user_id' => ['string', 'exists:users,id', 'required'],
             'designation' => ['string', 'nullable'],
             'produit_id' => ['string',  'nullable'],
-            'types' => ['required'],
+            'types' => ['required', 'string'],
             'image' => ['mimes:jpg,jpeg,png,webp'],
             'team_id' => ['string', 'exists:teams,id', 'required'],
         ];

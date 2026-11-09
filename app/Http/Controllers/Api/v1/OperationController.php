@@ -45,8 +45,8 @@ class OperationController extends Controller
             $total = $operation->prix * $operation->nombre;
             $totalOfTheDay += $total;
             $type_operations = $operation->types()->get();
+            // return $type_operations;
             foreach ($type_operations as $type_operation) {
-                // dd($tv);
                 if ($type_operation->name == 'Vente') {
                     $total = $operation->prix * $operation->nombre;
                     $totalVenteOfTheDay += $total;
@@ -54,41 +54,18 @@ class OperationController extends Controller
                     $total = $operation->prix * $operation->nombre;
                     $totalReparationOfTheDay += $total;
                 }
-                // elseif ($tv->id == 4) {
-                //     $total = $vente->prix * $vente->nombre;
-                //     $totalVenteEtReparationOfTheDay += $total;
-                // }
+                
             }
         }
 
-        return view('operations.index', [
-            'operations' => $query->paginate(2),
+        return [
+            'operations' => $query->get(),
             'input' => $request->validated(),
             'totalOfTheDay' => $totalOfTheDay,
             'totalVenteOfTheDay' => $totalVenteOfTheDay,
             'totalReparationOfTheDay' => $totalReparationOfTheDay,
             'depenseTotal' => $depenseTotal,
-        ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $operation = new Operation;
-        $user = Auth::user();
-
-        $operation->fill([
-            'user_id' => $user->id,
-        ]);
-        $produits = Produit::pluck('designation', 'id');
-
-        return view('operations.form', [
-            'operation' => $operation,
-            'produits' => $produits,
-            'types' => Type::pluck('name', 'id'),
-        ]);
+        ];
     }
 
     /**
@@ -96,40 +73,35 @@ class OperationController extends Controller
      */
     public function store(OperationFormRequest $request)
     {
-        $produit = Produit::where('id', $request->validated('produit_id'))->first();
+        // return $request['produit_id'];
+        $produit = Produit::find($request->validated('produit_id'))->first();
         if ($request->validated(key: 'designation') and $produit) {
-            return redirect()->route('operation.create')->with('error', 'Choisir entre Stock et Désignation');
+            return ['error' => 'Choisir entre Stock et Désignation'];
         } elseif ($request->validated('designation') or $produit) {
             if ($produit) {
                 if ($produit->nombre < $request->validated('nombre')) {
-                    return redirect()->route('operation.create')->with('error', 'Pas assez de produit de le stock');
+                    return ['error', 'Pas assez de produit de le stock'];
                 } else {
                     $operation = Operation::create($request->validated());
                     $produit->nombre -= $request->validated('nombre');
                     $produit->save();
                     $operation->types()->sync($request->validated('types'));
-
-                    return to_route('operation.index')->with('success', 'L\'opération a été créée');
+                    return [
+                        "operation" => $operation,
+                        'success' => 'L\'opération a été créée'
+                    ];
                 }
             } else {
                 $operation = Operation::create($request->validated());
                 $operation->types()->sync($request->validated('types'));
 
-                return to_route('operation.index')->with('success', 'L\'opération a été créée');
+                return [
+                    "operation" => $operation,
+                    'message' => 'L\'opération a été créée',
+                    "success" => true
+                ];
             }
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Operation $operation)
-    {
-        return view('operations.form', [
-            'operation' => $operation,
-            'types' => Type::pluck('name', 'id'),
-            'produits' => Produit::pluck('designation', 'id'),
-        ]);
     }
 
     /**
@@ -150,7 +122,11 @@ class OperationController extends Controller
         $operation->update($request->validated());
         $operation->types()->sync($request->validated('types'));
 
-        return to_route('operation.index')->with('success', 'L\'opération a été modifiée');
+        return [
+            "operation" => $operation,
+            'message' => 'L\'opération a été modifiée',
+            "success" => true
+        ];
     }
 
     /**
@@ -158,13 +134,15 @@ class OperationController extends Controller
      */
     public function destroy(Operation $operation)
     {
-        $produit = Produit::find(id: $operation->produit_id);
+        $produit = Produit::find($operation->produit_id);
         if ($produit) {
             $produit->nombre += $operation->nombre;
             $produit->save();
         }
         $operation->delete();
-
-        return to_route('operation.index')->with('success', 'L\'opération a été annulée');
+        return [
+            'message' => 'L\'opération a été annulée',
+            "success" => true
+        ];
     }
 }
