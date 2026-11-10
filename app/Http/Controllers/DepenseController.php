@@ -41,8 +41,10 @@ class DepenseController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(DepenseFormRequest $request)
-    {
-        $depense = Depense::create($request->validated());
+    {   
+        $validated = $request->validated();
+        $validated['user_id'] = $request->user()->id;
+        $depense = Depense::create($validated);
         return to_route('depense.depense.index')->with('success', 'La dépense a été créée');
     }
 
