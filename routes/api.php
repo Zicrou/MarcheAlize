@@ -8,11 +8,13 @@ use App\Http\Controllers\Api\v1\Admin\JournalController;
 use App\Http\Controllers\Api\v1\DepenseController;
 use App\Http\Controllers\Api\v1\OperationController;
 use App\Http\Controllers\Api\v1\EquipeController;
+use App\Models\User;
 
 $idRegex   = '[0-9a-z\-]+';
 
 Route::get('/user', function (Request $request) {
-    return $request->user();
+    $user = User::all()->select(['name', 'phone']);
+    return $user;
 })->middleware('auth:sanctum');
 
 Route::prefix('v1')->name('api.v1.')->group(function (){

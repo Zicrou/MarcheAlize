@@ -37,12 +37,27 @@ class JournalController extends Controller
         
     }
 
-    public function journalDepense(Request $request){
-        $depenses = Depense::where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
+   public function journalDepense(Request $request){
+        if($request->coequipier != null){
+            $validated = $request->validate([
+                'coequipier' => ['required', 'string', 'exists:users,id']
+            ]);
+            $depenses = Depense::where('user_id', $validated['coequipier'])->orderBy('created_at', 'desc')->paginate(10);
+        }else{
+            $depenses = Depense::where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->paginate(10);
+        }
+
         return ['depenses' => $depenses];
     }
     public function journalOperation(Request $request){
-        $operations = Operation::where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
+        if($request->coequipier != null){
+            $validated = $request->validate([
+                'coequipier' => ['required', 'string', 'exists:users,id']
+            ]);
+            $operations = Operation::where('user_id', $validated['coequipier'])->orderBy('created_at', 'desc')->paginate(10);
+        }else{
+            $operations = Operation::where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->paginate(10);
+        }
         return ['operations' => $operations];
     }
 

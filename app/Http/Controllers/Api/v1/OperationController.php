@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\OperationFormRequest;
+use App\Http\Requests\api\v1\OperationFormRequest;
 use App\Http\Requests\SearchOperationRequest;
 use App\Models\Depense;
 use App\Models\Operation;
@@ -18,14 +18,13 @@ class OperationController extends Controller
      */
     public function index(SearchOperationRequest $request)
     {
-        $depenseTotal = 0;
+        $depenseTotal = 0.00;
         $startDate = now()->startOfDay();
         $endDate = now()->endOfDay();
         $queryDepenses = Depense::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
         foreach ($queryDepenses as $qd) {
             $depenseTotal += $qd->montant;
         }
-        // dd($depenseTotal);
         $query = Operation::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc');
         if ($price = $request->validated('price')) {
             $query->where('prix', '<=', $price);
@@ -36,16 +35,15 @@ class OperationController extends Controller
             });
         }
         //  $totalOfTheDay = $query->sum("prix");
-        $totalOfTheDay = 0;
-        $totalVenteOfTheDay = 0;
-        $totalReparationOfTheDay = 0;
+        $totalOfTheDay = 0.00;
+        $totalVenteOfTheDay = 0.00;
+        $totalReparationOfTheDay = 0.00;
         $totalVenteEtReparationOfTheDay = 0;
         $operations = $query->get();
         foreach ($operations as $operation) {
             $total = $operation->prix * $operation->nombre;
             $totalOfTheDay += $total;
             $type_operations = $operation->types()->get();
-            // return $type_operations;
             foreach ($type_operations as $type_operation) {
                 if ($type_operation->name == 'Vente') {
                     $total = $operation->prix * $operation->nombre;
@@ -57,9 +55,8 @@ class OperationController extends Controller
                 
             }
         }
-
         return [
-            'operations' => $query->get(),
+            'operations' => $operations->load('types'),
             'input' => $request->validated(),
             'totalOfTheDay' => $totalOfTheDay,
             'totalVenteOfTheDay' => $totalVenteOfTheDay,
@@ -73,27 +70,33 @@ class OperationController extends Controller
      */
     public function store(OperationFormRequest $request)
     {
-        // return $request['produit_id'];
-        $produit = Produit::find($request->validated('produit_id'))->first();
-        if ($request->validated(key: 'designation') and $produit) {
+        $validated =  $request->validated();
+        $validated['user_id'] = $request->user()->id;
+        $validated['team_id'] = $request->user()->team->id;
+        // return $validated;
+        $produit = '';
+        if($request->validated('produit_id')){
+            $produit = Produit::find($request->validated('produit_id'))->first();
+        }
+        if ($validated['designation'] and $produit != '') {
             return ['error' => 'Choisir entre Stock et Désignation'];
-        } elseif ($request->validated('designation') or $produit) {
+        } elseif ($validated['designation'] or $produit) {
             if ($produit) {
-                if ($produit->nombre < $request->validated('nombre')) {
+                if ($produit->nombre < $validated['nombre']) {
                     return ['error', 'Pas assez de produit de le stock'];
                 } else {
-                    $operation = Operation::create($request->validated());
-                    $produit->nombre -= $request->validated('nombre');
+                    $operation = Operation::create($validated);
+                    $produit->nombre -= $validated['nombre'];
                     $produit->save();
-                    $operation->types()->sync($request->validated('types'));
+                    $operation->types()->sync($validated['types']);
                     return [
                         "operation" => $operation,
                         'success' => 'L\'opération a été créée'
                     ];
                 }
             } else {
-                $operation = Operation::create($request->validated());
-                $operation->types()->sync($request->validated('types'));
+                $operation = Operation::create($validated);
+                $operation->types()->sync($validated['types']);
 
                 return [
                     "operation" => $operation,

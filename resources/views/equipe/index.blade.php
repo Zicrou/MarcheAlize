@@ -43,13 +43,11 @@
                                         </span>
                                     </td>
                                     <td class="whitespace-nowrap px-4 py-4 text-sm border">
-                                        
-                                                @if ($member->pivot->role !== 'admin')
-                                                    <input name="coequipier" value="{{ $member->id }}" hidden>
-                                                    <a href="{{ route('admin.journal.depenses', ["coequipier" => $member->id]) }}" type="submit" class="rounded-md bg-blue-50 px-3 py-1.5 font-medium text-blue-700 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50">Dépense</a>
-                                                    <a href="{{ route('admin.journal.operations', ["coequipier" => $member->id]) }}"  type="submit" class="rounded-md bg-indigo-50 px-3 py-1.5 font-medium text-indigo-700 transition hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50">Opération</button>
-                                                @endif
-                                           
+                                        @if ($member->pivot->role !== 'admin')
+                                            <input name="coequipier" value="{{ $member->id }}" hidden>
+                                            <a href="{{ route('admin.journal.depenses', ["coequipier" => $member->id]) }}" type="submit" class="rounded-md bg-sky-500/100 px-3 py-1.5 font-medium text-blue-700 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50">Dépense</a>
+                                            <a href="{{ route('admin.journal.operations', ["coequipier" => $member->id]) }}"  type="submit" class="rounded-md bg-indigo-50 px-3 py-1.5 font-medium text-indigo-700 transition hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50">Opération</button>
+                                        @endif
                                     </td>
 
                                     <td class="whitespace-nowrap px-4 py-4 text-sm">

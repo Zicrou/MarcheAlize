@@ -23,10 +23,10 @@ class AuthController extends Controller
         $fields['team_id'] = $team->id;
         $fields['role'] = "Admin";
         $user = User::create($fields);
-
+        $user->load('team');
         $token = $user->createToken($request->name);
         return [
-            'user' => $user->load('team'), 
+            'user' => $user, 
             'token' => $token->plainTextToken
         ];
     }
@@ -40,11 +40,10 @@ class AuthController extends Controller
         }
     
         $token = $userExists->createToken($userExists->name);
-        $tokenFromRequest = PersonalAccessToken::findToken($token->plainTextToken);
+        $userExists->load('team');
         return [
-            'user' => $userExists->load('team'), 
+            'user' => $userExists, 
             'token' => $token->plainTextToken,
-            'tokenFromRequest' => $tokenFromRequest,
             
         ];
     }
