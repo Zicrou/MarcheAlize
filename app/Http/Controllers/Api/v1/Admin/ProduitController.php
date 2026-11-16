@@ -38,7 +38,7 @@ class ProduitController extends Controller
                 $image->move($path, $imageName);
             }
         }
-        $data['user_id'] = auth()->user()->id;
+        $data['user_id'] = $request->user()->id;
         $produit = Produit::create($data);
         return [
             "produit" => $produit,
@@ -108,5 +108,10 @@ class ProduitController extends Controller
             ];
         }
         return ["message" => "Ce produit n'existe pas"];
+    }
+
+    public function getProduit($produit){
+        $getProduit = Produit::find($produit);
+        return ["produit" => $getProduit];
     }
 }

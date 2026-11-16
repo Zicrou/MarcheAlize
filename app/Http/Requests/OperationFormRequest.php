@@ -24,7 +24,7 @@ class OperationFormRequest extends FormRequest
     {
         return [
             'nombre' => ['required', 'integer', 'min:1'],
-            'prix' => ['required', 'decimal:2'],
+            'prix' => ['required', 'int'],
             'user_id' => ['string', 'exists:users,id', 'required'],
             'designation' => ['string', 'nullable'],
             'produit_id' => ['string',  'nullable'],

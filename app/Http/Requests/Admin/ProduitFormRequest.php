@@ -25,7 +25,7 @@ class ProduitFormRequest extends FormRequest
             'designation' => ['required', 'string', 'min:2'],
             'nombre' => ['required', 'integer', 'min:1'],
             'montant' => ['required', 'integer', 'min:3'],
-            'image' => ['mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'image' => ['mimes:jpeg,png,jpg,gif,webp', 'max:2048', 'nullable'],
             // 'etat' => ['required', 'boolean'],
         ];
     }

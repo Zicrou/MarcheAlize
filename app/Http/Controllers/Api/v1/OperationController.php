@@ -8,8 +8,8 @@ use App\Http\Requests\SearchOperationRequest;
 use App\Models\Depense;
 use App\Models\Operation;
 use App\Models\Produit;
-use App\Models\Type;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OperationController extends Controller
 {
@@ -52,11 +52,12 @@ class OperationController extends Controller
                     $total = $operation->prix * $operation->nombre;
                     $totalReparationOfTheDay += $total;
                 }
-                
+
             }
         }
+
         return [
-            'operations' => $operations->load('types'),
+            'operations' => $operations->load(['types', 'produit']),
             'input' => $request->validated(),
             'totalOfTheDay' => $totalOfTheDay,
             'totalVenteOfTheDay' => $totalVenteOfTheDay,
@@ -70,40 +71,41 @@ class OperationController extends Controller
      */
     public function store(OperationFormRequest $request)
     {
-        $validated =  $request->validated();
+        $validated = $request->validated();
         $validated['user_id'] = $request->user()->id;
         $validated['team_id'] = $request->user()->team->id;
-        // return $validated;
-        $produit = '';
-        if($request->validated('produit_id')){
-            $produit = Produit::find($request->validated('produit_id'))->first();
-        }
-        if ($validated['designation'] and $produit != '') {
+        $produitId = $validated['produit_id'] ?? null;
+        $designation = $validated['designation'] ?? null;
+
+        if ($designation && $produitId) {
             return ['error' => 'Choisir entre Stock et Désignation'];
-        } elseif ($validated['designation'] or $produit) {
-            if ($produit) {
+        } elseif ($produitId) {
+            return DB::transaction(function () use ($validated, $produitId) {
+                $produit = Produit::query()->lockForUpdate()->findOrFail($produitId);
+
                 if ($produit->nombre < $validated['nombre']) {
                     return ['error', 'Pas assez de produit de le stock'];
-                } else {
-                    $operation = Operation::create($validated);
-                    $produit->nombre -= $validated['nombre'];
-                    $produit->save();
-                    $operation->types()->sync($validated['types']);
-                    return [
-                        "operation" => $operation,
-                        'success' => 'L\'opération a été créée'
-                    ];
                 }
-            } else {
+
                 $operation = Operation::create($validated);
+                $produit->nombre -= $validated['nombre'];
+                $produit->save();
                 $operation->types()->sync($validated['types']);
 
                 return [
-                    "operation" => $operation,
-                    'message' => 'L\'opération a été créée',
-                    "success" => true
+                    'operation' => $operation,
+                    'success' => 'L\'opération a été créée',
                 ];
-            }
+            });
+        } elseif ($designation) {
+            $operation = Operation::create($validated);
+            $operation->types()->sync($validated['types']);
+
+            return [
+                'operation' => $operation,
+                'message' => 'L\'opération a été créée',
+                'success' => true,
+            ];
         }
     }
 
@@ -126,9 +128,9 @@ class OperationController extends Controller
         $operation->types()->sync($request->validated('types'));
 
         return [
-            "operation" => $operation,
+            'operation' => $operation,
             'message' => 'L\'opération a été modifiée',
-            "success" => true
+            'success' => true,
         ];
     }
 
@@ -143,9 +145,10 @@ class OperationController extends Controller
             $produit->save();
         }
         $operation->delete();
+
         return [
             'message' => 'L\'opération a été annulée',
-            "success" => true
+            'success' => true,
         ];
     }
 }
