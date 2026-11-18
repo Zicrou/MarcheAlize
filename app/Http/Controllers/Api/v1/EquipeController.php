@@ -28,21 +28,13 @@ class EquipeController extends Controller
                 'role' => 'admin',
             ]);
         }
-        $invitations = TeamInvitation::where('user_id', $request->user()->id)
-            ->where('status', 'en attente')
-            ->with('inviter')
-            ->get();
-
-        $mesEquipes = TeamUser::where('user_id', $request->user()->id)
-            ->where('role', 'membre')
-            ->with('team')
-            ->get()
-            ->pluck('team');
+        $demandeEnvoye = TeamInvitation::where("invited_by", $request->user()->id)->where("status", "!=", "accepted")->get();
+        $demandeRecu = TeamInvitation::where("user_id", $request->user()->id)->where("status", "en attente")->get();
         
         return[
             'liste_membres' => $team->users,
-            'invitations' => $invitations,
-            'mesEquipes' => $mesEquipes,
+            'demandes_envoyes' => $demandeEnvoye,
+            'demande_recus' => $demandeRecu,
         ];
     }
 
@@ -53,27 +45,33 @@ class EquipeController extends Controller
             'accepterInvitation' => ['required', 'in:en attente,accepter,refuser']
         ]);
         $inviter = User::where('id', $validated['inviter'])->firstOrFail();
-        $team = $inviter->team; // à adapter au nom de votre relation
-        abort_unless($team, 404);
-
-         if($inviter->id == $request->user()->id) {
-            return back()->withErrors(['inviter' => 'Vous êtes déjà membre de cette équipe.']);
+        if(!$inviter){
+            return ['message' => "Demandeur introuvable"];
         }
-        $invitation = TeamInvitation::where('team_id', $team->id)
-            ->where('user_id', $request->user()->id)
-            ->first();
+        
+        $team = $inviter->team; // à adapter au nom de votre relation
+        if(!$team){
+            return ['message' => "Equipe introuvable"];
+            }
+            
+            if($inviter->id == $request->user()->id) {
+                return ['message' => 'Vous êtes déjà membre de votre équipe.'];
+                }
+                $invitation = TeamInvitation::where('team_id', $team->id)
+                ->where('user_id', $request->user()->id)
+                ->first();
         if ($invitation) {
             if ($validated['accepterInvitation'] === 'refuser') {
                 $invitation->status = 'refuser';
                 $invitation->save();
-                return ['message' => 'Vous avez refusé l\'invitation à rejoindre l\'équipe.'];
+                return ['message' => 'Vous avez refusé l\'invitation à rejoindre l\'équipe de ' . $team->name];
             }else if ($validated['accepterInvitation'] === 'accepter') {
                     $invitation->status = 'accepter';
                     $invitation->save();
                     $team->users()->syncWithoutDetaching([
                         $request->user()->id => ['role' => 'membre'],
                     ]);
-                    return ['message' => 'Le membre a été ajouté à votre équipe.'];
+                    return ['message' => 'Vous avez accepter de rejoindre l\'equipe de ' . $team->name];
             } else {
                 return ['message' => 'Valeur invalide pour accepter/refuser l\'invitation.'];
             }
@@ -87,53 +85,90 @@ class EquipeController extends Controller
         $team = $user1->team; // adaptez selon votre relation
         if(!$team) {
             return back()->withErrors(['team' => 'Vous n\'avez pas d\'équipe.']);
-        }
-        $user2 = User::where('email', $request->membre)->first();
+            }
+            $user2 = User::where('email', $request->user_email_or_phone)->orWhere('phone', $request->user_email_or_phone)->first();
         if (!$user2) {
-            return back()->withErrors(['membre' => 'Utilisateur non trouvé.']);
+            return ['message' => 'Utilisateur non trouvé.'];
         }
-
+        
         // Exemple avec role stocké sur la table pivot
-        abort_unless(
-            $team->users()
-                ->where('users.id', $user1->id)
-                ->wherePivot('role', 'admin')
-                ->exists(),
-            403
-        );
+        if($team->users()
+            ->where('users.id', $user1->id)
+            ->wherePivot('role', 'admin')
+            ->exists()){
 
-        if($team->users()->whereKey($user2->id)->exists()) {
-            return back()->withErrors(['membre' => 'Déjà membre.']);
+            }else{
+                return false;
+            }
+
+        $dejaMembre = TeamInvitation::where('invited_by', $request->user()->id)->where('user_id', $user2->id)->where('status', "accepter")->first();
+        if($dejaMembre){
+            return ["message" => "Déjà membre."];
         }
+        $inv = '';
+       try {
+                $invitation = TeamInvitation::where('team_id', $team->id)
+                    ->where('user_id', $user2->id)
+                    ->where('invited_by',  $user1->id)
+                    ->where('status', 'en attente')
+                    ->first();
 
-        $invitation = TeamInvitation::updateOrCreate(
-            ['team_id' => $team->id, 'user_id' => $user2->id],
-            [
-                'invited_by' => $user1->id,
-                'status' => 'en attente',
-                // 'expires_at' => now()->addDays(7),
-            ]
-        );
-        return [
-            'invitation' => $invitation,
-            'message' =>'Invitation envoyée.'
-        ];
+                if(!$invitation){
+                    $inv = TeamInvitation::create(['team_id' => $team->id, 
+                    'invited_by' =>  $user1->id, 
+                    'user_id' => $user2->id, 
+                    'status' => 'en attente']);
+                    }
+
+            } catch (\Throwable $e) {
+                //Gérez l’erreur, par exemple :
+                report($e);
+                return ['message' => "1 Impossible d'envoyer l'invitation."];
+            }
+            if($inv){
+                return [
+                    'invitation' => $inv,
+                    'message' =>'Invitation envoyée.',
+                    'success' => true,
+                ];
+            }else{
+                return [
+                    'success' => false,
+                    'message' => "Impossible d'envoyer l'invitation.",
+                ];
+            }
     }
 
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
-        $membre = User::find($request->membre);
+        $membre = User::find($request->id);
         if (!$membre) {
-            return Redirect::back()->withErrors(['membre' => 'Membre non trouvé.']);
+            return ['message' => 'Membre non trouvé.'];
         }
         if ($membre->id == $request->user()->id) {
-            return Redirect::back()->withErrors(['membre' => 'Vous ne pouvez pas supprimer votre propre compte.']);
+            return ['message' => 'Vous ne pouvez pas supprimer votre propre équipe.'];
+            }
+            $team = $request->user()->team;
+            $invitation = '';
+            try{
+                $invitation = TeamInvitation::where('team_id', $team->id)
+                ->where('user_id', $membre->id)
+                ->where('invited_by', $request->user()->id)
+                ->first();
+            if($invitation){
+                $invitation->forceDelete();
+            }else{
+                return ['message' => "Cette invitation n'existe pas"];
+            }
+                
+        }catch(\Throwable $e){
+            report($e);
         }
-        $team = $request->user()->team;
         $team->users()->detach($membre->id);
-        return back()->with('success', 'Le membre a été supprimé de votre équipe.');
+        $message = "Le membre a été supprimé de votre équipe.";
+        return ['success' => true, "message" => $message ];
     }
 }

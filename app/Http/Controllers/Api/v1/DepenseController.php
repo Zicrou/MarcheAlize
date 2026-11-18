@@ -19,8 +19,11 @@ class DepenseController extends Controller
         $startDate = now()->startOfDay();
         $endDate = now()->endOfDay();
         $query = Depense::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc');
-        return[
-            "depenses" => $query->get(),
+        $totalDepense = $query->sum('montant');
+
+        return [
+            'depenses' => $query->get(),
+            'totalDepense' => $totalDepense,
         ];
     }
 
@@ -47,11 +50,17 @@ class DepenseController extends Controller
         $data['user_id'] = $request->user()->id;
         
         $depense = Depense::create($data);
-        return [
-            "depense" => $depense,
-            'message' => 'La dépense a été créée',
-            "success" => true
-        ];
+        if($depense){
+            return [
+                "depense" => $depense,
+                'message' => 'La dépense a été créée',
+                "success" => true
+            ];
+        }else{
+            return [
+                'errMessage' => 'Impossible de créer la dépense',
+            ];
+        }
     }
 
     /**
@@ -96,7 +105,7 @@ class DepenseController extends Controller
                 'success' => true
             ];
         }else{
-            return ["message" => "Impossible d'effectuer cette opération"];
+            return ["errMessage" => "Impossible d'effectuer cette opération"];
         }
     }
 }

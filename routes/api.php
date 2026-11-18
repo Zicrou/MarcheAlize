@@ -24,6 +24,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (){
         Route::resource('produits', ProduitController::class)->except(['show']);
         Route::get('supprime-photo-produit/{id}', [ProduitController::class, 'destroyImage'])->name("produit.destroyImage");
         Route::get('produits/{produit}', [ProduitController::class, 'getProduit']);
+        
         // Types
         Route::resource('types', TypeController::class)->except(['show']);
         

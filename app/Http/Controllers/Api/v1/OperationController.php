@@ -57,7 +57,7 @@ class OperationController extends Controller
         }
 
         return [
-            'operations' => $operations->load(['types', 'produit']),
+            'operations' => $operations->load(['types', 'produit', 'user']),
             'input' => $request->validated(),
             'totalOfTheDay' => $totalOfTheDay,
             'totalVenteOfTheDay' => $totalVenteOfTheDay,

@@ -14,4 +14,9 @@ class Depense extends Model
     use SoftDeletes;
     use HasUuid;
     protected $fillable = ['libelle', 'montant', 'user_id', 'statut'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

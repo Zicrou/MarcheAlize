@@ -15,24 +15,22 @@ class JournalController extends Controller
      */
     public function index(Request $request)
     {
-        $depenseTotal = 0;
-        // Add Depenses de chaque jour dans Journal
-
-        $startDate = now()->startOfDay();
-        $endDate = now()->endOfDay();
-        $queryDepenses = Depense::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
-        $allDepenses = $queryDepenses->groupBy(function ($m) {
-            return $m->created_at->format('d-m-Y H:i:s');
-        });
+        $queryDepenses = Depense::query()->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
+        $queryDepenses->load('user');
+        // $allDepenses = $queryDepenses->groupBy(function ($m) {
+        //     return $m->created_at->format('d-m-Y H:i:s');
+        // });
+        
         
 
-        $queryOperation = Operation::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
-        $operations = $queryOperation->groupBy(function ($m) {
-            return $m->created_at->format('d-m-Y H:i:s');
-        });
+        $queryOperation = Operation::query()->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
+        // $operations = $queryOperation->groupBy(function ($m) {
+        //     return $m->created_at->format('d-m-Y H:i:s');
+        // });
+        $queryOperation->load(["user", "types", "produit"]);
         return  [
-            'operations' => $operations,
-            'depenses' => $allDepenses,
+            'operations' => $queryOperation,
+            'depenses' => $queryDepenses,
         ];
         
     }

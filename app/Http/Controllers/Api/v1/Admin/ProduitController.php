@@ -8,6 +8,7 @@ use App\Models\Produit;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use App\Models\Operation;
 
 
 class ProduitController extends Controller
@@ -77,19 +78,25 @@ class ProduitController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($produit)
+    public function destroy(String $produit)
     {
         $produit_exist = Produit::find($produit);
+        // return["produit" => $produit_exist];
         if(!$produit_exist){
             return [
-                "message" => "Produit introuvable"
+                "errMessage" => "Produit introuvable"
             ];
         }
-        $produit->delete();
-        return [
-            "success" => true,
-            'message' => 'Le produit a été supprimé'
-        ];
+        $operation = Operation::where('produit_id', $produit)->first();
+        if($operation){
+            return["errMessage" => "Ce Produit est lier a une opération"];
+        }else{
+            $produit_exist->delete();
+            return [
+                "success" => true,
+                'message' => 'Le produit a été supprimé'
+            ];
+        }
     }
 
     public function destroyImage($produit)
