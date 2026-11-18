@@ -15,18 +15,18 @@ class JournalController extends Controller
      */
     public function index(Request $request)
     {
-        $queryDepenses = Depense::query()->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
+        if($request->coequipier != null){
+            $validated = $request->validate([
+                'coequipier' => ['required', 'string', 'exists:users,id']
+            ]);
+            $queryDepenses = Depense::query()->where('user_id', $validated['coequipier'])->orderBy('created_at', 'desc')->get();
+            $queryOperation = Operation::query()->where('user_id', $validated['coequipier'])->orderBy('created_at', 'desc')->get();
+            
+            }else{
+            $queryDepenses = Depense::query()->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
+            $queryOperation = Operation::query()->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
+        }
         $queryDepenses->load('user');
-        // $allDepenses = $queryDepenses->groupBy(function ($m) {
-        //     return $m->created_at->format('d-m-Y H:i:s');
-        // });
-        
-        
-
-        $queryOperation = Operation::query()->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
-        // $operations = $queryOperation->groupBy(function ($m) {
-        //     return $m->created_at->format('d-m-Y H:i:s');
-        // });
         $queryOperation->load(["user", "types", "produit"]);
         return  [
             'operations' => $queryOperation,

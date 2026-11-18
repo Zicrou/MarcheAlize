@@ -28,13 +28,17 @@ class EquipeController extends Controller
                 'role' => 'admin',
             ]);
         }
-        $demandeEnvoye = TeamInvitation::where("invited_by", $request->user()->id)->where("status", "!=", "accepted")->get();
-        $demandeRecu = TeamInvitation::where("user_id", $request->user()->id)->where("status", "en attente")->get();
-        
+        $demandeEnvoye = TeamInvitation::where("invited_by", $request->user()->id)->where("status", "!=", "accepted")->with('user')->get();
+        $demandeRecu = TeamInvitation::where("user_id", $request->user()->id)->where("status", "en attente")->with('inviter')->get();
+        $equipesDansLesQuelsJeSuis = TeamUser::where('user_id', $request->user()->id)
+                                                ->where('role', 'membre')
+                                                ->with('team.user')
+                                                ->get();
         return[
             'liste_membres' => $team->users,
             'demandes_envoyes' => $demandeEnvoye,
-            'demande_recus' => $demandeRecu,
+            'demandes_recus' => $demandeRecu,
+            'equipesDansLesQuelsJeSuis' => $equipesDansLesQuelsJeSuis
         ];
     }
 
@@ -71,7 +75,7 @@ class EquipeController extends Controller
                     $team->users()->syncWithoutDetaching([
                         $request->user()->id => ['role' => 'membre'],
                     ]);
-                    return ['message' => 'Vous avez accepter de rejoindre l\'equipe de ' . $team->name];
+                    return ['message' => 'Vous avez accepter de rejoindre l\'equipe de ' . $team->name, "success" => true];
             } else {
                 return ['message' => 'Valeur invalide pour accepter/refuser l\'invitation.'];
             }

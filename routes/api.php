@@ -32,7 +32,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (){
         Route::resource('operations', OperationController::class);
        
         // Journaux
-        Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
+        Route::post('journal', [JournalController::class, 'index'])->name('journal.index');
         Route::get('journal/depenses', [JournalController::class, 'journalDepense'])->name('journal.depenses');
         Route::get('journal/operations', [JournalController::class, 'journalOperation'])->name('journal.operations');
         
@@ -42,7 +42,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (){
         // Equipe
         Route::get('/equipes', [EquipeController::class, 'index'])->name('equipe.index');
         Route::delete('/equipes/{id}', [EquipeController::class, 'destroy'])->name('equipe.destroy');
-        Route::post('/equipes/accepter-invitation', [EquipeController::class, 'accepterInvitation'])->name('equipe.accepterInvitation');
+        Route::put('/equipes/accepter-invitation', [EquipeController::class, 'accepterInvitation'])->name('equipe.accepterInvitation');
         Route::post('/equipes/invite', [EquipeController::class, 'invite'])->name('equipe.invite');
 
 
