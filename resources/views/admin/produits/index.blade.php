@@ -28,7 +28,7 @@
                         <td>{{ number_format($produit->montant, thousands_separator: ' ') }}</td>
                         <td>
                             @if ($produit->image)
-                                <img class="d-block" style="height:50px;" src="{{ asset($produit->image) }}" alt="">
+                                <img class="d-block" style="height:50px;" src="{{ Storage::url($produit->image) }}" alt="">
                             @endif
                         </td>
                         <td>

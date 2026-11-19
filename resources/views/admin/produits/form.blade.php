@@ -19,7 +19,6 @@
                 @include('shared.input', ['class' => 'col', 'name' => 'montant', 'label' => 'Montant', 'type' => 'number', 'value' => $produit->montant])
             </div>
             
-            
             <div>
                 <button class="btn btn-primary">
                     @if ($produit->exists)

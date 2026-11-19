@@ -7,7 +7,7 @@ use App\Http\Requests\Admin\ProduitFormRequest;
 use App\Models\Produit;
 use App\Models\Type;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 
 class ProduitController extends Controller
@@ -43,10 +43,12 @@ class ProduitController extends Controller
             if($image = $request->file('image')){
                 $filename = $image->getClientOriginalName();
                 $imageName = time().'-'.uniqid().'_'.$filename;
-                $path = 'pictures/produit/';
-                $data['image'] = $path.$imageName;
-                // $image->storeAs($path, $imageName, 'public'); 
-                $image->move($path, $imageName);
+                $path = 'produits/photos';
+                
+                // 2. Envoyer l'image sur Laravel Object Storage (génère un nom unique)
+                $chemin = $image->storeAs($path, $imageName);
+                $data['image'] = $chemin;
+ 
             }
         }
         $data['user_id'] = auth()->user()->id;
@@ -78,14 +80,14 @@ class ProduitController extends Controller
             if($image = $request->file('image')){
                 $filename = $image->getClientOriginalName();
                 $imageName = time().'-'.uniqid().'_'.$filename;
-                $path = 'pictures/produit/';
-                $data['image'] = $path.$imageName;
-                // $image->storeAs($path, $imageName, 'public'); 
-                $image->move($path, $imageName);
+                $path = 'produits/photos';
+                // 2. Envoyer l'image sur Laravel Object Storage (génère un nom unique)
+                $chemin = $image->storeAs($path, $imageName);
+                $data['image'] = $chemin;
             }
         }
-        if (File::exists($produit->image)) {
-            File::delete($produit->image);
+        if ($produit->image && Storage::exists($produit->image)) {
+            Storage::delete($produit->image);
         }
         $produit->update($data);
         // $produit->types()->sync($request->validated('types'));
@@ -98,8 +100,8 @@ class ProduitController extends Controller
      */
     public function destroy(Produit $produit)
     {
-        if (File::exists($produit->image)) {
-            File::delete($produit->image);
+        if (Storage::exists($produit->image)) {
+            Storage::delete($produit->image);
         }
         dd($produit->ventes);
         // $produit->delete();
@@ -109,8 +111,8 @@ class ProduitController extends Controller
     public function destroyImage($produit)
     {
         $produitImage = Produit::where('id', $produit)->first();
-        if (File::exists($produitImage->image)) {
-            File::delete($produitImage->image);
+        if ($produit->image && Storage::exists($produitImage->image)) {
+            Storage::delete($produitImage->image);
         }
         $produitImage->update(['image'=> '']);
         return to_route('admin.produit.index')->with('success', 'Le produit a été supprimé');
