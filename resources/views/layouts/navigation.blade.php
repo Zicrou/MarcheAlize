@@ -41,6 +41,14 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        <x-dropdown-link :href="route('equipe.index')">
+                            {{ __('Equipe') }}
+                        </x-dropdown-link>
+
+                        <x-dropdown-link :href="route('operation.index')">
+                            {{ __('Gestion') }}
+                        </x-dropdown-link>
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
