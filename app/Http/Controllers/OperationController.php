@@ -44,20 +44,12 @@ class OperationController extends Controller
         foreach ($operations as $operation) {
             $total = $operation->prix * $operation->nombre;
             $totalOfTheDay += $total;
-            $type_operations = $operation->types()->get();
-            foreach ($type_operations as $type_operation) {
-                // dd($tv);
-                if ($type_operation->name == 'Vente') {
-                    $total = $operation->prix * $operation->nombre;
-                    $totalVenteOfTheDay += $total;
-                } elseif ($type_operation->name == 'Réparation') {
-                    $total = $operation->prix * $operation->nombre;
-                    $totalReparationOfTheDay += $total;
-                }
-                // elseif ($tv->id == 4) {
-                //     $total = $vente->prix * $vente->nombre;
-                //     $totalVenteEtReparationOfTheDay += $total;
-                // }
+            if ($operation->type->name == 'Vente') {
+                $total = $operation->prix * $operation->nombre;
+                $totalVenteOfTheDay += $total;
+            } elseif ($operation->type->name == 'Réparation') {
+                $total = $operation->prix * $operation->nombre;
+                $totalReparationOfTheDay += $total;
             }
         }
 
@@ -112,13 +104,11 @@ class OperationController extends Controller
                     $operation = Operation::create($request->validated());
                     $produit->nombre -= $request->validated('nombre');
                     $produit->save();
-                    $operation->types()->sync($request->validated('types'));
 
                     return to_route('operation.index')->with('success', 'L\'opération a été créée');
                 }
             } else {
                 $operation = Operation::create($request->validated());
-                $operation->types()->sync($request->validated('types'));
 
                 return to_route('operation.index')->with('success', 'L\'opération a été créée');
             }

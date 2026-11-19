@@ -28,7 +28,7 @@ class OperationFormRequest extends FormRequest
             'user_id' => ['string', 'exists:users,id', 'required'],
             'designation' => ['string', 'nullable'],
             'produit_id' => ['string',  'nullable'],
-            'type' => ['required', 'string'],
+            'type_id' => ['required', 'string'],
             'image' => ['mimes:jpg,jpeg,png,webp'],
             'team_id' => ['string', 'exists:teams,id', 'required'],
         ];

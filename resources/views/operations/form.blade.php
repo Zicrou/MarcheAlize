@@ -21,7 +21,7 @@ $route = request()->route()->getName();
             <input type="hidden" name="statut" value={{ $operation->statut }}>
             <div class="d-flex flex-column mb-3 col-10">
                 <div class="d-flex justify-content-center">
-                    @include('shared.select', ['class' => 'col mb-3', 'name' => 'type', 'label' => 'Types', 'value' => $operation->type()->pluck('id')])
+                    @include('shared.select', ['class' => 'col mb-3', 'name' => 'type_id', 'label' => 'Types', 'value' => $operation->type()->pluck('id')])
                 </div>
                 @if (str_contains($route, 'edit'))
                     @if (!$operation->designation)
