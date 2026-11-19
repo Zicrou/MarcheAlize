@@ -18,6 +18,9 @@
             <div class="col-12 col-lg-6 mb-3">
                 @include('shared.input', ['class' => 'col', 'name' => 'montant', 'label' => 'Montant', 'type' => 'number', 'value' => $produit->montant])
             </div>
+            <div class=" col-12 col-lg-6 mb-3">
+                @include('shared.input', ['name' => 'image', 'label' => 'Image', 'type' => 'file'])
+            </div>
             
             <div>
                 <button class="btn btn-primary">
