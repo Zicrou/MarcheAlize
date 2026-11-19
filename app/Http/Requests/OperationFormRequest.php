@@ -28,9 +28,18 @@ class OperationFormRequest extends FormRequest
             'user_id' => ['string', 'exists:users,id', 'required'],
             'designation' => ['string', 'nullable'],
             'produit_id' => ['string',  'nullable'],
-            'types' => ['required', 'string'],
+            'type' => ['required', 'string'],
             'image' => ['mimes:jpg,jpeg,png,webp'],
             'team_id' => ['string', 'exists:teams,id', 'required'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nombre.required' => 'Le champ nombre ne peut pas être vide.',
+            'prix.required' => 'Le champ prix ne peut pas être vide.',
+            'type.required' => 'Le champ type ne peut pas être vide.',
         ];
     }
 }

@@ -37,11 +37,19 @@ class EquipeController extends Controller
             ->with('team')
             ->get()
             ->pluck('team');
+        $equipesDansLesQuelsJeSuis = TeamUser::where('user_id', $request->user()->id)
+            ->where('role', 'membre')
+            ->with('team.user')
+            ->get();
+        $demandesEnvoyees = TeamInvitation::where("invited_by", $request->user()->id)->where("status", "!=", "accepted")->with('user')->get();
         
+        // dd($demandeEnvoye);                                    
         return view('equipe.index', [
             'liste_membres' => $team->users,
             'invitations' => $invitations,
             'mesEquipes' => $mesEquipes,
+            'equipesDansLesQuelsJeSuis' => $equipesDansLesQuelsJeSuis,
+            'demandesEnvoyees' => $demandesEnvoyees,
         ]);
     }
 

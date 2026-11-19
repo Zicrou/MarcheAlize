@@ -25,7 +25,8 @@ class OperationController extends Controller
             $depenseTotal += $qd->montant;
         }
         // dd($depenseTotal);
-        $query = Operation::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc');
+        $query = Operation::query()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', Auth::user()->id)->with('type')->orderBy('created_at', 'desc');
+        
         if ($price = $request->validated('price')) {
             $query->where('prix', '<=', $price);
         }
@@ -59,6 +60,8 @@ class OperationController extends Controller
                 // }
             }
         }
+
+
 
         return view('operations.index', [
             'operations' => $query->paginate(2),
@@ -95,6 +98,9 @@ class OperationController extends Controller
      */
     public function store(OperationFormRequest $request)
     {
+        if (($request->validated(key: 'designation') == null) and ($request->validated('produit_id') == null)) {
+            return redirect()->route('operation.create')->with('error', 'Choisir entre Stock et Désignation');
+        }
         $produit = Produit::where('id', $request->validated('produit_id'))->first();
         if ($request->validated(key: 'designation') and $produit) {
             return redirect()->route('operation.create')->with('error', 'Choisir entre Stock et Désignation');

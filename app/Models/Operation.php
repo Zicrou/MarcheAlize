@@ -15,7 +15,7 @@ class Operation extends Model
     use HasFactory;
     use SoftDeletes;
     use HasUuid;
-    protected $fillable = ['designation', 'user_id', 'nombre', 'prix', 'statut', 'produit_id', 'image', 'team_id'];
+    protected $fillable = ['designation', 'user_id', 'nombre', 'prix', 'statut', 'produit_id', 'image', 'team_id', 'type_id'];
 
 
     public function user(): BelongsTo
@@ -27,9 +27,9 @@ class Operation extends Model
     {
         return $this->belongsTo(Produit::class);
     }
-    public function types(): BelongsToMany
+    public function type(): BelongsTo
     {
-        return $this->belongsToMany(Type::class);
+        return $this->belongsTo(Type::class);
     }
 
     public function produits(): BelongsTo

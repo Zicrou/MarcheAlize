@@ -15,7 +15,7 @@ $slugRegex = '[0-9a-z\-]+';
 $membre   = '[0-9a-z\-]+';
 
 Route::get('/', function () {
-    return view('base');
+    return view('accueil');
 });
 
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (){

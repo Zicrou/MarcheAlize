@@ -45,8 +45,7 @@
                                     <td class="whitespace-nowrap px-4 py-4 text-sm border">
                                         @if ($member->pivot->role !== 'admin')
                                             <input name="coequipier" value="{{ $member->id }}" hidden>
-                                            <a href="{{ route('admin.journal.depenses', ["coequipier" => $member->id]) }}" type="submit" class="rounded-md bg-sky-500/100 px-3 py-1.5 font-medium text-blue-700 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50">Dépense</a>
-                                            <a href="{{ route('admin.journal.operations', ["coequipier" => $member->id]) }}"  type="submit" class="rounded-md bg-indigo-50 px-3 py-1.5 font-medium text-indigo-700 transition hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50">Opération</button>
+                                            <a href="{{ route('admin.journal.index', ["coequipier" => $member->id]) }}" type="submit" class="rounded-md bg-sky-500/100 px-3 py-1.5 font-medium text-blue-700 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50">Journal</a>
                                         @endif
                                     </td>
 
@@ -70,7 +69,7 @@
 
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl">
-                    Demandes d'invitation en attente :
+                    Demandes reçues :
                     @if ($invitations->isEmpty())
                         <p>Aucune demande d'invitation en attente.</p>
                     @else
@@ -87,7 +86,6 @@
                                 <tr>
                                     <td class="border border-gray-100">{{ $invitation->inviter->name }}</td>
                                     <td class="border border-gray-100">{{ $invitation->inviter->phone }}</td>
-                                    <td class="border border-gray-100">Journal</td>
                                     <td class="border border-gray-100">
                                         <form action="{{ route('equipe.accepterInvitation', $member->id) }}" method="POST" class="inline">
                                             @csrf
@@ -115,17 +113,43 @@
 
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl">
+                    Demandes envoyées :
+                    @if ($demandesEnvoyees->isEmpty())
+                        <p>Aucune demande envoyée.</p>
+                    @else
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300">Nom</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300">Status</th>
+                                </tr>
+                            </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+                            @foreach ($demandesEnvoyees as $demandeEnvoyee)
+                                <tr class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/40">
+                                    <td class="whitespace-nowrap px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-300">{{ $demandeEnvoyee->user->name }}</td>
+                                    <td class="whitespace-nowrap px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-300">{{ $demandeEnvoyee->status }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @endif
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div class="max-w-xl">
                     Vous êtes dans les équipes suivantes :
-                    @if ($mesEquipes->isEmpty())
+                    @if ($equipesDansLesQuelsJeSuis->isEmpty())
                         <p>Vou n' êtes dans aucune équipe.</p>
                     @else
-                        <table class="table-auto border-separate border-spacing-2 dark:border-gray-500">
+                        <table class="table-auto border-separate border-spacing-x-2 border-spacing-y-4 dark:border-gray-500">
                             <thead>
                             </thead>
                             <tbody>
-                                @foreach ($mesEquipes as $equipe)
-                                    <tr>
-                                        <td class="border border-gray-100">{{ $equipe->name }}</td>
+                                @foreach ($equipesDansLesQuelsJeSuis as $equipe)
+                                    <tr class="">
+                                        <td class="py-4 border border-gray-100"><a href="{{ route('admin.journal.index', ["coequipier" => $equipe->team->user->id ]) }}">{{ $equipe->team->name }}</a></td>
                                     </tr>
                                 @endforeach
                             </tbody>

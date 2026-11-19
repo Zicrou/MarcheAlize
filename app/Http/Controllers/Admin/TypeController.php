@@ -6,16 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TypeFormRequest;
 use App\Models\Type;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class TypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         return view("admin.types.index",
-    ["types" => Type::paginate(25) ]);
+            ["types" => Type::where('user_id', $request->user()->id)->paginate(25) ]);
     }
 
     /**
@@ -34,7 +35,11 @@ class TypeController extends Controller
      */
     public function store(TypeFormRequest $request)
     {
-        $type = Type::create($request->validated());
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+
+        Type::create($data);
+
         return to_route('admin.type.index')->with('success', 'Le type a été créé');
     }
 
@@ -52,8 +57,10 @@ class TypeController extends Controller
      * Update the specified resource in storage.
      */
     public function update(TypeFormRequest $request, Type $type)
-    {
-        $type->update($request->validated());
+    {   
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+        $type->update($data);
         return to_route('admin.type.index')->with('success', 'Le type a été modifié');
     }
 

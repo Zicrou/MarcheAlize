@@ -6,16 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TypeFormRequest;
 use App\Models\Type;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Http\Request;
 class TypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         return[
-            "types" => Type::all()
+            "types" => Type::where('user_id', $request->user()->id)->get()
         ];
     }
 
@@ -24,7 +24,10 @@ class TypeController extends Controller
      */
     public function store(TypeFormRequest $request)
     {
-        $type = Type::create($request->validated());
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+        $type = Type::create($data);
+
         return [
             "type" => $type,
             'message' => 'Le type a été créé',
@@ -37,7 +40,9 @@ class TypeController extends Controller
      */
     public function update(TypeFormRequest $request, Type $type)
     {
-        $type->update($request->validated());
+        $validated = $request->validated();
+        $validated['user_id'] = $request->user()->id;
+        $type->update($validated);
         return [
             "type" => $type,
             'message' => 'Le type a été modifié',

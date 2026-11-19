@@ -21,6 +21,8 @@ return new class extends Migration
             $table->uuid('produit_id')->nullable();
             $table->foreign('produit_id')->references('id')->on('produits')->onDelete('cascade');
             $table->dateTime('deleted_at')->nullable();
+            $table->uuid('type_id');
+            $table->foreign('type_id')->references('id')->on('types')->onDelete('cascade');
             $table->uuid('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->uuid('team_id');

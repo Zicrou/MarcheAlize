@@ -2,25 +2,7 @@
 
 @section('title', 'Ventes')
 @section('content')
-<section class="mb-5">
-    <form action="" method="get" class=" d-flex gap-3">
-    <div class="container">
-        <div class="row align-items-center justify-content-center">
-                <div class="col-12 col-lg-6 mb-3">
-                    <input type="text" placeholder="Mot clef" class="form-control" name="title" value="{{ $input['title'] ?? ''}}">
-                </div>
-                <div class="col-12 col-lg-6 mb-3">
-                    <input type="number" placeholder="Budget max" class="form-control" name="price" value="{{ $input['price'] ?? ''}}">
-                </div>
-            </div>
-            <div class="d-flex justify-content-center align-items-center">
-                <button class="btn btn-primary px-5 py-3 d-inline-block">
-                    Rechercher
-                </button>
-            </div>
-        </div>
-    </form>
-</section>
+
 
 
 <section class="container py-3 mb-5">
@@ -75,7 +57,7 @@
                             @else
                                 <td>{{ $operation->produit->designation }}</td>
                             @endif
-                            <td>{{ $operation->type }}</td>
+                            <td>{{ $operation->type->name }}</td>
                             <td>{{ $operation->nombre }}</td>
                             
                             <td>{{ number_format($operation->prix, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA</td>

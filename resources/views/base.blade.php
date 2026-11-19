@@ -35,13 +35,8 @@
                 <li><a href="{{ route('admin.type.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'type.')])>Types</a></li>
                 <li><a href="{{ route('operation.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'operation.')])>Opérations</a></li>
                 <li><a href="{{ route('depense.depense.index') }}" @class(["dropdown-item", "active" => str_contains($route, 'depense.')])>Dépenses</a></li>
-                <li class="dropend">
-                  <a class="dropdown-item dropdown-toggle {{ str_contains($route, 'journal.') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Journal</a>
-                  <ul class="dropdown-menu dropdown-menu-dark shadow">
-                    <li><a href="{{ route('admin.journal.operations') }}" @class(["dropdown-item", "active" => str_contains($route, 'operation.')])>Opérations</a></li>
-                    <li><a href="{{ route('admin.journal.depenses') }}" @class(["dropdown-item", "active" => str_contains($route, 'depense.')])>Dépenses</a></li>
-                  </ul>
-                </li>
+                <li><a href="{{ route("admin.journal.index") }}" @class(["dropdown-item", "active" => str_contains($route, 'journal.')])>Journal</a></li>
+                
               </ul>
             </li>
             <li class="nav-item">
@@ -53,11 +48,13 @@
               <a href="{{ route('login') }}" class="btn btn-outline-light">Se connecter</a>
               <a href="{{ route('register') }}" class="btn btn-info text-dark">S'inscrire</a>
             @else
-              <span class="navbar-text text-light">Bonjour, {{ Auth::user()->name }}</span>
-              <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn btn-outline-light">Se déconnecter</button>
-              </form>
+            <a href="{{ route('dashboard') }}" class="btn btn-outline-light">Bonjour, {{ Auth::user()->name }}</a>
+              <div class="d-flex justify-content-center">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-warning">Se déconnecter</button>
+                </form>
+              </div>
             @endguest
           </div>
         </div>
