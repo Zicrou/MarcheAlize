@@ -16,7 +16,6 @@
                     <th>Désignation</th>
                     <th>Nombre</th>
                     <th>Montant</th>
-                    <th>Image</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -26,11 +25,7 @@
                         <td>{{ $produit->designation }}</td>
                         <td>{{ $produit->nombre }}</td>
                         <td>{{ number_format($produit->montant, thousands_separator: ' ') }}</td>
-                        <td>
-                            @if ($produit->image)
-                                <img class="d-block" style="height:50px;" src="{{ Storage::url($produit->image) }}" alt="">
-                            @endif
-                        </td>
+                       
                         <td>
                             <div class="d-flex gap-2 w-100 justify-content-end">
                                 {{-- <a href="{{ route('admin.upload.image', $produit) }}" class="btn btn-primary">Images</a>
