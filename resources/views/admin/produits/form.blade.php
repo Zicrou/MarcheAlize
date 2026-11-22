@@ -13,10 +13,10 @@
                 @include('shared.input', ['class' => 'col', 'name' => 'designation', 'label' => 'Désignation', 'value' => $produit->designation])
             </div>
             <div class="col-12 col-lg-6 mb-3">
-                @include('shared.input', ['class' => 'col', 'name' => 'nombre', 'label' => 'Nombre','type' => 'number', 'value' => $produit->nombre])
+                @include('shared.input', ['class' => 'col', 'name' => 'nombre', 'label' => 'Nombre', 'value' => $produit->nombre])
             </div>
             <div class="col-12 col-lg-6 mb-3">
-                @include('shared.input', ['class' => 'col', 'name' => 'montant', 'label' => 'Montant', 'type' => 'number', 'value' => $produit->montant])
+                @include('shared.input', ['class' => 'col', 'name' => 'montant', 'label' => 'Montant',  'value' => $produit->montant])
             </div>
             
             <div>

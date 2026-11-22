@@ -15,7 +15,7 @@
             @php
             @endphp
             <div class="col-12 col-lg-6 mb-3">
-                @include('shared.input', ['class' => 'col', 'name' => 'montant', 'label' => 'Montant', 'value' => $depense->montant, 'type' => 'numeric'])
+                @include('shared.input', ['class' => 'col', 'name' => 'montant', 'label' => 'Montant', 'value' => $depense->montant])
             </div>
             <div class="d-flex justify-content-start mt-3">
                 <button class="btn btn-primary">
