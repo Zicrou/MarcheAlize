@@ -15,7 +15,7 @@ class Operation extends Model
     use HasFactory;
     use SoftDeletes;
     use HasUuid;
-    protected $fillable = ['designation', 'user_id', 'nombre', 'prix', 'statut', 'produit_id', 'image', 'team_id', 'type_id'];
+    protected $fillable = ['designation', 'user_id', 'nombre', 'prix', 'statut', 'produit_id', 'team_id', 'type_id'];
 
 
     public function user(): BelongsTo

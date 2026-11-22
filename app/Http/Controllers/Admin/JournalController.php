@@ -26,7 +26,7 @@ class JournalController extends Controller
             $queryOperation = Operation::query()->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->paginate(2, ['*'], 'operations_page')->withQueryString();
         }
         $queryDepenses->load('user');
-        $queryOperation->load(['user', 'types', 'produit']);
+        $queryOperation->load(['user', 'type', 'produit']);
 
         //
         return view('admin.journaux.index', [

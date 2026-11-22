@@ -22,7 +22,7 @@
                     @else
                         <td>{{ $operation->produit->designation }}</td>
                     @endif
-                    <td>{{ $operation->type }}</td>
+                    <td>{{ $operation->type->name }}</td>
                     <td>{{ $operation->nombre }}</td>
                     <td>{{ number_format($operation->prix, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA</td>
                     <td>{{ number_format($operation->prix * $operation->nombre, thousands_separator: ' ', decimal_separator: '.', decimals: 2) }} FCFA</td>
