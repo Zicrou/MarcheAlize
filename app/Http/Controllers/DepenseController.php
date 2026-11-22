@@ -61,6 +61,7 @@ class DepenseController extends Controller
      */
     public function edit(Depense $depense)
     {
+        // dd($depense);
         return view('depenses.form', ['depense' => $depense]);
     }
 
